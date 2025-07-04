@@ -234,6 +234,12 @@ db.run(`
 // Authentication routes
 
 // Exemplo de endpoint
+
+app.get('/', (req, res) => {
+  res.redirect('/login'); // ou '/home' ou qualquer página inicial do sistema
+});
+
+
 app.get('/externo/ocorrencia/:id/pdf', (req, res) => {
   const id = req.params.id;
 
