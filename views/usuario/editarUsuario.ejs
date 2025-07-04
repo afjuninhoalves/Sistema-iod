@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Editar Usuário – SistemaCIM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+  <!-- sidebar compartilhada -->
+  <%- include('../partials/sidebar') %>
+
+  <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+    <h1 class="text-2xl font-semibold mb-6">Editar Usuário</h1>
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <form class="space-y-4" action="/editar-usuario/<%= usuario.id %>" method="POST" class="space-y-4">
+        
+        <!-- Nome Completo -->
+        <div>
+          <label class="block text-sm font-medium">Nome Completo</label>
+          <input
+            type="text"
+            name="nome_completo"
+            value="<%= usuario.nome_completo %>"
+            required
+            class="mt-1 w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <!-- Cargo -->
+        <div>
+          <label class="block text-sm font-medium">Cargo</label>
+          <input
+            type="text"
+            name="cargo"
+            value="<%= usuario.cargo %>"
+            required
+            class="mt-1 w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <!-- Cidade -->
+        <div>
+          <label class="block text-sm font-medium">Cidade</label>
+          <select
+            name="cidade_id"
+            required
+            class="mt-1 w-full border-gray-300 rounded-md"
+          >
+            <% cidades.forEach(c => { %>
+              <option
+                value="<%= c.id %>"
+                <%= c.id === usuario.cidade_id ? 'selected' : '' %>
+              ><%= c.cidade %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- CPF -->
+        <div>
+          <label class="block text-sm font-medium">CPF</label>
+          <input
+            type="text"
+            name="cpf"
+            value="<%= usuario.cpf %>"
+            required
+            class="mt-1 w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <!-- Telefone -->
+        <div>
+          <label class="block text-sm font-medium">Telefone</label>
+          <input
+            type="text"
+            name="telefone"
+            value="<%= usuario.telefone %>"
+            required
+            class="mt-1 w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <!-- Perfil -->
+        <div>
+          <label class="block text-sm font-medium">Perfil</label>
+          <select
+            name="perfil"
+            required
+            class="mt-1 w-full border-gray-300 rounded-md"
+          >
+            <option value="admin"   <%= usuario.perfil === 'admin'   ? 'selected' : '' %>>Administrador</option>
+            <option value="usuario" <%= usuario.perfil === 'usuario' ? 'selected' : '' %>>Usuário</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+        >
+          Salvar Alterações
+        </button>
+      </form>
+    </div>
+  </main>
+</body>
+</html>

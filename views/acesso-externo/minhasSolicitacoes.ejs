@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Minhas Solicitações</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="flex bg-gray-100 h-screen">
+  <%- include('../partials/sidebar_externo') %>
+
+    <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+      <h1 class="text-2xl font-bold mb-4">Minhas Solicitações</h1>
+      <div class="mb-4 text-right">
+        <a href="/externo/solicitacoes/nova"
+          class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded">Nova
+          Solicitação</a>
+      </div>
+
+      <div class="bg-white rounded shadow overflow-x-auto">
+        <div class="overflow-x-auto"><table class="min-w-full text-sm">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="px-4 py-2 text-left">Título</th>
+              <th class="px-4 py-2 text-left">Descrição</th>
+              <th class="px-4 py-2 text-left">Resposta</th>
+              <th class="px-4 py-2 text-left">Ocorrência Vinculada</th>
+              <th class="px-4 py-2 text-left">Detalhes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% solicitacoes.forEach(s=> { %>
+              <tr class="border-t">
+                <td class="px-4 py-2">
+                  <%= s.titulo %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= s.descricao %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= s.resposta || 'Pendente' %>
+                </td>
+                <td class="px-4 py-2">
+                  <% if (s.ocorrencia_id) { %>
+                    <a href="/externo/detalhes-ocorrencia/<%= s.ocorrencia_id %>" class="text-blue-600 underline">
+                      <%= s.protocolo %>
+                    </a>
+                    <% } else { %>
+                      —
+                      <% } %>
+
+                </td>
+                <td>
+                  <a href="/externo/solicitacoes/<%= s.id %>/detalhes" class="text-blue-600 underline">Ver Detalhes</a>
+                </td>
+
+              </tr>
+              <% }) %>
+          </tbody>
+        </table></div>
+      </div>
+    </main>
+</body>
+
+</html>

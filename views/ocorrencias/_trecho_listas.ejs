@@ -1,0 +1,27 @@
+
+<% if (veiculos && veiculos.length > 0) { %>
+  <div>
+    <h2 class="font-bold text-green-700 mb-1">Veículos:</h2>
+    <% veiculos.forEach(function(v) { %>
+      <div class="text-green-700 cursor-pointer hover:underline addSeta" data-nome="<%= v %>" data-color="green"><%= v %></div>
+    <% }); %>
+  </div>
+<% } %>
+
+<% if (envolvidos && envolvidos.length > 0) { %>
+  <div>
+    <h2 class="font-bold text-blue-700 mb-1">Envolvidos:</h2>
+    <% envolvidos.forEach(function(e) { %>
+      <div class="text-blue-700 cursor-pointer hover:underline addSeta" data-nome="<%= e %>" data-color="blue"><%= e %></div>
+    <% }); %>
+  </div>
+<% } %>
+
+<% if (armas && armas.length > 0) { %>
+  <div>
+    <h2 class="font-bold text-red-700 mb-1">Armas:</h2>
+    <% armas.forEach(function(a) { %>
+      <div class="text-red-700 cursor-pointer hover:underline addSeta" data-nome="<%= a %>" data-color="red"><%= a %></div>
+    <% }); %>
+  </div>
+<% } %>

@@ -1,0 +1,19 @@
+<%- include('../partials/sidebar') %>
+<main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+  <h1 class="text-2xl font-semibold mb-6">Cadastrar Ocorrência</h1>
+  <div class="bg-white p-4 rounded-lg shadow">
+    <form class="space-y-4" action="/cadastro-ocorrencia" method="POST" class="space-y-4">
+      <div><label class="block text-sm font-medium">Cidade</label>
+      <select class="w-full" name="cidade_id" required class="w-full border-gray-300 rounded-md">
+        <% cidades.forEach(function(c) { %>
+          <option value="<%= c.id %>"><%= c.cidade %></option>
+        <% }); %>
+      </select></div>
+      <div><label class="block text-sm font-medium">Descrição</label>
+      <textarea name="descricao" required class="w-full border-gray-300 rounded-md"></textarea></div>
+      <div><label class="block text-sm font-medium">Data/Hora</label>
+      <input class="w-full" type="datetime-local" name="data_hora" required class="w-full border-gray-300 rounded-md"/></div>
+      <button type="submit" class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Cadastrar</button>
+    </form>
+  </div>
+</main>

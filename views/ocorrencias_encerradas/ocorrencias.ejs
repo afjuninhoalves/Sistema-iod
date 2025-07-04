@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Ocorrências Encerradas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+  <%- include('../partials/sidebar') %>
+
+  <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+    <h1 class="text-2xl font-semibold mb-6">Ocorrências Encerradas</h1>
+    <div class="overflow-x-auto bg-white rounded-lg shadow">
+      <div class="overflow-x-auto"><table class="min-w-full table-auto">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">Protocolo</th>
+            <th class="px-4 py-2">Data/Hora</th>
+            <th class="px-4 py-2">Natureza</th>
+            <th class="px-4 py-2">Motivo</th>
+            <th class="px-4 py-2">Ações</th>
+            <th class="px-4 py-2">Orgãos Liberados</th>
+            <th class="px-4 py-2">Liberação Para</th>
+
+          </tr>
+        </thead>
+        <tbody>
+        <% ocorrencias.forEach(o => { %>
+          <tr class="border-b">
+            <td class="px-4 py-2"><%= o.protocolo %></td>
+            <td class="px-4 py-2"><%= o.data_hora_fato %></td>
+            <td class="px-4 py-2"><%= o.natureza %></td>
+            <td class="px-4 py-2"><%= o.motivo_encerramento && o.motivo_encerramento.trim() !== '' ? o.motivo_encerramento : '—' %></td>
+            <td class="px-4 py-2">
+              <a href="/detalhes-ocorrencia/<%= o.id %>" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Detalhes</a>
+              <% if (o.encerrada === 1) { %>
+                <form class="space-y-4" action="/ocorrencia/<%= o.id %>/reabrir" method="POST" 
+                  onsubmit="var m=prompt('Motivo da reabertura:'); if(!m) return false; this.motivo_reabertura.value=m;" 
+                  class="inline ml-2">
+                <input class="w-full" type="hidden" name="motivo_reabertura" value="" />
+                   <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">🔓 Reabrir</button>
+              </form>
+              <% } %>
+            </td>
+            <td><%= o.orgaos_liberados || '—' %></td>
+            <td class="border px-2 py-1 text-center">
+              <form class="space-y-4" action="/ocorrencia/<%= o.id %>/liberar" method="POST">
+              <select class="w-full" name="orgao" class="border rounded px-2 text-sm">
+              <option disabled selected>Escolher órgão</option>
+              <option value="DETRAN">DETRAN</option>
+              <option value="Polícia Civil">Polícia Civil</option>
+              <option value="Polícia Militar">Polícia Militar</option>
+              <option value="Ministério Público">Ministério Público</option>
+               </select>
+    <button type="submit" class="ml-1 bg-blue-600 text-white px-2 py-1 rounded text-sm">Liberar</button>
+  </form>
+</td>
+
+
+
+
+
+          </tr>
+        <% }) %>
+        </tbody>
+      </table></div>
+    </div>
+  </main>
+</body>
+</html>

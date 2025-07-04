@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Home - SistemaCIM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-blue-900 text-white flex flex-col">
+    <div class="flex items-center px-6 py-4">
+      <img src="/public/images/cim_logo.jpg" alt="CIM Logo" class="h-10 mr-3"/>
+      <span class="text-xl font-bold">SistemaCIM</span>
+    </div>
+    <div class="px-4">
+      <div class="relative">
+        <input type="text" placeholder="Pesquisar (Alt+2)" class="w-full rounded-full py-2 px-4 text-black"/>
+        <button class="absolute right-2 top-2 text-gray-500 hover:text-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 16l-4-4m0 0l4-4m-4 4h18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <nav class="mt-6 flex-1 overflow-y-auto">
+      <a href="/home" class="block py-2 px-6 hover:bg-blue-800">Dashboard</a>
+      <a href="/cadastro-cidade" class="block py-2 px-6 hover:bg-blue-800">Cadastrar Cidade</a>
+      <a href="/cidades" class="block py-2 px-6 hover:bg-blue-800">Ver Cidades</a>
+      <a href="/cadastro-usuario" class="block py-2 px-6 hover:bg-blue-800">Cadastrar Usuário</a>
+      <a href="/usuarios" class="block py-2 px-6 hover:bg-blue-800">Ver Usuários</a>
+      <a href="/relatorios" class="block py-2 px-6 hover:bg-blue-800">Relatórios</a>
+    </nav>
+    <div class="p-6 border-t border-blue-800">
+      <button onclick="location.href='/logout'" class="w-full text-left">Sair</button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 p-6 overflow-y-auto">
+
+  <h2>Usuários Cadastrados</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Cargo</th>
+        <th>Perfil</th>
+        <th>Cidade</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="usuarios-table">
+      <!-- A tabela será preenchida dinamicamente -->
+    </tbody>
+  </table>
+  
+  <div class="form-container">
+    <h2>Cadastrar Usuário</h2>
+    <form action="/cadastro-usuario" method="POST">
+      <label for="nome_completo">Nome Completo</label>
+      <input type="text" id="nome_completo" name="nome_completo" required>
+
+      <label for="cargo">Cargo</label>
+      <input type="text" id="cargo" name="cargo" required>
+
+      <label for="cidade">Cidade</label>
+      <select id="cidade" name="cidade" required>
+        <!-- As opções de cidade serão preenchidas dinamicamente -->
+      </select>
+
+      <label for="cpf">CPF</label>
+      <input type="text" id="cpf" name="cpf" required pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" title="CPF no formato 000.000.000-00">
+
+      <label for="telefone">Telefone</label>
+      <input type="text" id="telefone" name="telefone" required>
+
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" name="senha" required>
+
+      <label for="perfil">Perfil</label>
+      <select id="perfil" name="perfil" required>
+        <option value="admin">Admin</option>
+        <option value="gestor">Gestor</option>
+        <option value="usuario">Usuário</option>
+      </select>
+
+      <input type="submit" value="Cadastrar Usuário">
+    </form>
+  </div>
+
+  <script>
+    // Preencher a lista de cidades dinamicamente
+    fetch('/cidades')
+      .then(response => response.json())
+      .then(cidades => {
+        const cidadeSelect = document.getElementById('cidade');
+        cidades.forEach(cidade => {
+          const option = document.createElement('option');
+          option.value = cidade.id;
+          option.textContent = cidade.cidade;
+          cidadeSelect.appendChild(option);
+        });
+      });
+
+    // Preencher a tabela de usuários
+    fetch('/usuarios')
+      .then(response => response.json())
+      .then(usuarios => {
+        const usuariosTable = document.getElementById('usuarios-table');
+        usuarios.forEach(usuario => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${usuario.nome_completo}</td>
+            <td>${usuario.cargo}</td>
+            <td>${usuario.perfil}</td>
+            <td>${usuario.cidade}</td>
+            <td><button onclick="editarUsuario(${usuario.id})">Editar</button></td>
+          `;
+          usuariosTable.appendChild(row);
+        });
+      });
+
+    // Função de editar usuário
+    function editarUsuario(id) {
+      window.location.href = `/editar-usuario/${id}`;
+    }
+  </script>
+
+</main>
+</body>
+</html>

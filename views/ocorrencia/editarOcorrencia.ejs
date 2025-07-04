@@ -1,0 +1,24 @@
+<%- include('../partials/sidebar') %>
+<main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+  <h1 class="text-2xl font-semibold mb-6">Editar Ocorrência</h1>
+  <div class="bg-white p-4 rounded-lg shadow">
+    <form class="space-y-4" action="/editar-ocorrencia/<%= ocorrencia.id %>" method="POST" class="space-y-4">
+      <div><label class="block text-sm font-medium">Cidade</label>
+      <select class="w-full" name="cidade_id" required class="w-full border-gray-300 rounded-md">
+        <% cidades.forEach(function(c) { %>
+          <option value="<%= c.id %>" <%= c.id===ocorrencia.cidade_id?'selected':'' %>><%= c.cidade %></option>
+        <% }); %>
+      </select></div>
+      <div><label class="block text-sm font-medium">Descrição</label>
+      <textarea name="descricao" class="w-full border-gray-300 rounded-md"><%= ocorrencia.descricao %></textarea></div>
+      <div><label class="block text-sm font-medium">Data/Hora</label>
+      <input class="w-full" type="datetime-local" name="data_hora" value="<%= ocorrencia.data_hora %>" class="w-full border-gray-300 rounded-md"/></div>
+      <div><label class="block text-sm font-medium">Status</label>
+      <select class="w-full" name="status" class="w-full border-gray-300 rounded-md">
+        <option value="open" <%= ocorrencia.status==='open'?'selected':'' %>>Aberta</option>
+        <option value="closed" <%= ocorrencia.status==='closed'?'selected':'' %>>Encerrada</option>
+      </select></div>
+      <button type="submit" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Atualizar</button>
+    </form>
+  </div>
+</main>

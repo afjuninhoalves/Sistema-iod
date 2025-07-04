@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Home - SistemaCIM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-blue-900 text-white flex flex-col">
+    <div class="flex items-center px-6 py-4">
+      <img src="/public/images/cim_logo.jpg" alt="CIM Logo" class="h-10 mr-3"/>
+      <span class="text-xl font-bold">SistemaCIM</span>
+    </div>
+    <div class="px-4">
+      <div class="relative">
+        <input class="w-full" type="text" placeholder="Pesquisar (Alt+2)" class="w-full rounded-full py-2 px-4 text-black"/>
+        <button class="absolute right-2 top-2 text-gray-500 hover:text-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 16l-4-4m0 0l4-4m-4 4h18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <nav class="mt-6 flex-1 overflow-y-auto">
+      <a href="/home" class="block py-2 px-6 hover:bg-blue-800">Dashboard</a>
+      <a href="/cadastro-cidade" class="block py-2 px-6 hover:bg-blue-800">Cadastrar Cidade</a>
+      <a href="/cidades" class="block py-2 px-6 hover:bg-blue-800">Ver Cidades</a>
+      <a href="/cadastro-usuario" class="block py-2 px-6 hover:bg-blue-800">Cadastrar Usuário</a>
+      <a href="/usuarios" class="block py-2 px-6 hover:bg-blue-800">Ver Usuários</a>
+      <a href="/relatorios" class="block py-2 px-6 hover:bg-blue-800">Relatórios</a>
+    </nav>
+    <div class="p-6 border-t border-blue-800">
+      <button onclick="location.href='/logout'" class="w-full text-left">Sair</button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main
+ class="flex-1 p-6 overflow-y-auto">
+    <h1 class="text-2xl font-semibold mb-6">Cidades Cadastradas</h1>
+    <div class="overflow-x-auto">
+      <div class="overflow-x-auto"><table class="min-w-full bg-white rounded-lg shadow-md overflow-hidden">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Logo</th>
+            <th class="px-4 py-2">Cidade</th>
+            <th class="px-4 py-2">Corporação</th>
+            <th class="px-4 py-2">Comandante</th>
+            <th class="px-4 py-2">Contato</th>
+            <th class="px-4 py-2">Inteligência</th>
+            <th class="px-4 py-2">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% cidades.forEach(function(c) { %>
+          <tr class="border-b">
+            <td class="px-4 py-2"><%= c.id %></td>
+            <td class="px-4 py-2"><% if (c.logo) { %><img class="h-2 w-2 object-contain inline-block" src="/uploads/<%= c.logo %>" class="logo-img city-logo"/> <% } %></td>
+            <td class="px-4 py-2"><%= c.cidade %></td>
+            <td class="px-4 py-2"><%= c.corporacao %></td>
+            <td class="px-4 py-2"><%= c.comandante %></td>
+            <td class="px-4 py-2"><%= c.telefone_contato %></td>
+            <td class="px-4 py-2"><%= c.telefone_inteligencia %></td>
+            <td class="px-4 py-2"><a href="/editar-cidade/<%= c.id %>" class="text-blue-600 hover:underline">Editar</a></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table></div>
+    </div>
+</main>
+</body>
+</html>

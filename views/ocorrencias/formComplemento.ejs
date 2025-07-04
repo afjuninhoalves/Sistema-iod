@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= complemento ? 'Editar' : 'Adicionar' %> Complemento</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+</head>
+<body class="flex bg-gray-100 min-h-screen">
+  <%- include('../partials/sidebar') %>
+  <main class="max-w-screen p-4" class="flex-1 p-6">
+    <h1 class="text-2xl font-semibold mb-4"><%= complemento ? 'Editar' : 'Adicionar' %> Complemento</h1>
+    <form class="space-y-4" action="<%= complemento
+      ? '/ocorrencia/' + complemento.ocorrencia_id + '/complemento/' + complemento.id + '/editar'
+      : '/ocorrencia/' + ocorrenciaId + '/complemento' %>"
+      method="POST" enctype="multipart/form-data" class="space-y-4">
+      <div>
+        <label class="block font-medium">Descrição</label>
+        <textarea name="descricao" class="w-full border rounded p-2"><%= complemento ? complemento.descricao : '' %></textarea>
+      </div>
+      <div class="flex space-x-4">
+        <div>
+          <label class="block font-medium">Data</label>
+          <input class="w-full" type="date" name="data" class="border rounded p-2" value="<%= complemento ? complemento.data : '' %>" required>
+        </div>
+        <div>
+          <label class="block font-medium">Hora</label>
+          <input class="w-full" type="time" name="hora" class="border rounded p-2" value="<%= complemento ? complemento.hora : '' %>" required>
+        </div>
+      </div>
+      <div>
+        <label class="block font-medium">Local</label>
+        <input class="w-full" type="text" name="local" class="w-full border rounded p-2" value="<%= complemento ? complemento.local : '' %>" required>
+      </div>
+      <div>
+        <label class="block font-medium">Arquivo</label>
+        <input class="w-full" type="file" name="arquivo" class="w-full">
+        <% if (complemento && complemento.arquivo) { %>
+          <p class="text-sm mt-1">Arquivo atual:
+            <a href="/uploads/<%= complemento.arquivo %>" target="_blank" class="text-blue-600 underline"><%= complemento.arquivo %></a>
+          </p>
+          <input class="w-full" type="hidden" name="oldArquivo" value="<%= complemento.arquivo %>">
+        <% } %>
+      </div>
+
+      <div>
+        <label class="block font-medium">Preview / Anotação</label>
+        <img id="comp-img" src="<%= complemento && complemento.arquivo ? '/uploads/' + complemento.arquivo : '' %>" class="hidden">
+        <canvas id="comp-canvas" class="border w-full h-auto"></canvas>
+        <input class="w-full" type="hidden" name="imagemAnotada" id="imagemAnotada">
+      </div>
+
+      <div class="space-x-2">
+        <button type="button" data-color="green" class="btnSeta bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          + Comparação
+        </button>
+        <button type="button" data-color="blue" class="btnSeta bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          + Vítima 
+        </button>
+        <button type="button" data-color="red" class="btnSeta bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+          + Suspeito
+        </button>
+           <button type="button" data-color="yellow" class="btnSeta bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
+          + Objetos 
+        </button>
+
+
+      </div>
+
+      <div>
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          <%= complemento ? 'Salvar Alterações' : 'Adicionar' %>
+        </button>
+      </div>
+    </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const imgEl       = document.getElementById('comp-img');
+  const canvasEl    = document.getElementById('comp-canvas');
+  const form        = document.querySelector('form');
+  const hiddenInput = document.getElementById('imagemAnotada');
+  const fileInput   = document.querySelector('input[name="arquivo"]');
+  const fcanvas  = new fabric.Canvas(canvasEl, { selection: true });
+
+  // 1) Modo Editar: pré-carrega no canvas como BACKGROUND
+  if (imgEl && imgEl.src) {
+    fabric.Image.fromURL(imgEl.src, img => {
+      canvasEl.width  = img.width;
+      canvasEl.height = img.height;
+      fcanvas.setWidth(img.width);
+      fcanvas.setHeight(img.height);
+      fcanvas.setBackgroundImage(img, fcanvas.renderAll.bind(fcanvas));
+      hiddenInput.value = imgEl.src;
+    });
+  }
+
+  // 2) Seleção por <input class="w-full" type="file">
+  fileInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      fabric.Image.fromURL(ev.target.result, img => {
+        fcanvas.clear();
+        canvasEl.width  = img.width;
+        canvasEl.height = img.height;
+        fcanvas.setWidth(img.width);
+        fcanvas.setHeight(img.height);
+        fcanvas.setBackgroundImage(img, fcanvas.renderAll.bind(fcanvas));
+        hiddenInput.value = ev.target.result;
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // 3) Colagem (Win+Shift+S → Ctrl+V)
+  document.addEventListener('paste', e => {
+    const items = e.clipboardData.items;
+    for (let itm of items) {
+      if (itm.type.startsWith('image/')) {
+        const blob = itm.getAsFile();
+        const reader = new FileReader();
+        reader.onload = ev => {
+          fabric.Image.fromURL(ev.target.result, img => {
+            fcanvas.clear();
+            canvasEl.width  = img.width;
+            canvasEl.height = img.height;
+            fcanvas.setWidth(img.width);
+            fcanvas.setHeight(img.height);
+            fcanvas.setBackgroundImage(img, fcanvas.renderAll.bind(fcanvas));
+            hiddenInput.value = ev.target.result;
+          });
+        };
+        reader.readAsDataURL(blob);
+        break;
+      }
+    }
+  });
+
+  // 4) Inserção de seta + texto como objetos separados
+  const counts = { green: 1, blue: 1, red: 1 };
+  document.querySelectorAll('.btnSeta').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const color = btn.dataset.color;
+      const prefix = color === 'green' ? 'Veículo'
+                   : color === 'blue'  ? 'Envolvido'
+                   : 'Arma';
+      const label = `${prefix} ${String(counts[color]).padStart(2,'0')}`;
+      counts[color]++;
+
+      // centro do canvas:
+      const cx = fcanvas.getWidth()/2, cy = fcanvas.getHeight()/2;
+      const len = 60, headLen = 10;
+      const x1 = cx - len/2, y1 = cy;
+      const x2 = cx + len/2, y2 = cy;
+      const ang = 0; // horizontal
+
+      // corpo da seta
+      const line = new fabric.Line([x1, y1, x2, y2], {
+        stroke: color, strokeWidth: 4, selectable: true
+      });
+      // pontas
+      const head1 = new fabric.Line([
+        x2, y2,
+        x2 - headLen*Math.cos(ang - Math.PI/6),
+        y2 - headLen*Math.sin(ang - Math.PI/6)
+      ], { stroke: color, strokeWidth: 4, selectable: true });
+      const head2 = new fabric.Line([
+        x2, y2,
+        x2 - headLen*Math.cos(ang + Math.PI/6),
+        y2 - headLen*Math.sin(ang + Math.PI/6)
+      ], { stroke: color, strokeWidth: 4, selectable: true });
+
+      // texto logo à direita
+      const txt = new fabric.Textbox(label, {
+        left: x2 + 10,
+        top:  y2 - 10,
+        fontSize: 16,
+        fill: color,
+        editable: true,
+        selectable: true
+      });
+
+      // adiciona tudo
+      fcanvas.add(line, head1, head2, txt);
+      fcanvas.setActiveObject(txt);
+      fcanvas.renderAll();
+    });
+  });
+
+  // 5) Duplo-clique para editar texto
+  fcanvas.on('mouse:dblclick', ({ target }) => {
+    if (target && target.type === 'textbox') {
+      target.enterEditing();
+      target.selectAll();
+      fcanvas.renderAll();
+    }
+  });
+
+  // 6) Antes do submit, força a renderização e atualiza o hidden
+  form.addEventListener('submit', () => {
+    fcanvas.renderAll();
+    const dataURL = fcanvas.toDataURL({ format:'png', quality:1 });
+    hiddenInput.value = dataURL;
+    // não usamos preventDefault: o form envia multipart/form-data
+  });
+
+ // 7) Deletar objeto selecionado com Delete ou Backspace
+// Delete remove objeto, mas só fora do modo de edição de texto
+window.addEventListener('keydown', function(e) {
+  if (e.key === 'Delete') {
+    const activeObj = fcanvas.getActiveObject();
+    // remove apenas se houver objeto selecionado e não estivermos editando texto
+    if (activeObj && !(activeObj.isEditing)) {
+      fcanvas.remove(activeObj);
+      fcanvas.discardActiveObject();
+      fcanvas.requestRenderAll(); // ou fcanvas.renderAll()
+    }
+  }
+});
+
+});
+</script>
+
+
+  </main>
+</body>
+</html>

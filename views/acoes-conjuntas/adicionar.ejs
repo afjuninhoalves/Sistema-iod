@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Adicionar Ação por Cidade - SistemaCIM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col h-screen bg-gray-100">
+ 
+  <div class="flex flex-1 overflow-hidden">
+    <%- include('../partials/sidebar') %>
+    <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+      <h1 class="text-2xl font-semibold mb-6">Adicionar Ação por Cidade</h1>
+      <div class="w-full bg-white p-6 rounded shadow">
+
+        <form class="space-y-4" action="/acoes-conjuntas/<%= acaoId %>/cidades/<%= cidades[0].cidade_id %>"
+              method="POST" enctype="multipart/form-data" class="space-y-4">
+          
+          <!-- Cidade -->
+          <div>
+            <label class="block text-sm font-medium">Cidade</label>
+            <select class="w-full" name="cidadeId" required
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+              <% cidades.forEach(c => { %>
+                <option value="<%= c.cidade_id %>"><%= c.cidade %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="mb-4">
+  <label class="block text-sm font-medium">Ocorrência vinculada</label>
+  <select class="w-full" name="ocorrenciaId"
+          class="w-full border-gray-300 rounded-md">
+    <option value="">–– selecione uma ocorrência ––</option>
+    <% ocorrencias.forEach(function(o) { %>
+      <option value="<%= o.id %>">
+        <%= o.protocolo %> – <%= o.status %>
+      </option>
+    <% }) %>
+  </select>
+</div>
+
+          <!-- Data e Hora -->
+          <div>
+            <label class="block text-sm font-medium">Data e Hora</label>
+            <input class="w-full" type="datetime-local" name="data_hora" required
+                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+          </div>
+
+          <!-- Responsável -->
+          <div>
+            <label class="block text-sm font-medium">Responsável</label>
+            <input class="w-full" type="text" name="responsavel" required
+                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+          </div>
+
+          <!-- Descrição -->
+          <div>
+            <label class="block text-sm font-medium">Descrição da Ação</label>
+            <textarea name="descricao" rows="3" required
+                      class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
+          </div>
+
+          <!-- Container de blocos de qualificação -->
+          <div id="qualificacao_blocks" class="space-y-4">
+            <div class="qualificacao_block space-y-2">
+              <div>
+                <label class="block text-sm font-medium">Qualificação</label>
+                <select class="w-full" name="qualificacao_tipo[]" required
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                  <option value="individuos">Indivíduos</option>
+                  <option value="informantes">Informantes</option>
+                </select>
+              </div>
+              <!-- Aqui o script renderFields() vai injetar os inputs q_nome[], q_cpf[], etc -->
+              <div class="qualificacao_fields"></div>
+            </div>
+          </div>
+
+          <!-- Botão para adicionar outro qualificado -->
+          <button type="button" id="addQualificado"
+                  class="inline-flex px-3 py-1 bg-blue-500 text-white rounded">
+            + Adicionar mais
+          </button>
+
+          <!-- Upload de arquivos -->
+          <div>
+            <label class="block text-sm font-medium">Arquivos (áudio/vídeo)</label>
+            <input class="w-full" type="file" name="arquivos[]" multiple accept="audio/*,video/mp4"
+                   class="mt-1 block w-full text-sm text-gray-600">
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <button type="submit"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+              Salvar Ação
+            </button>
+            <a href="/acoes-conjuntas/<%= acaoId %>"
+               class="text-sm text-gray-600 hover:underline">← Voltar</a>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // renderFields adapta cada bloco conforme o tipo selecionado
+    function renderFields(block) {
+      const sel = block.querySelector('select[name="qualificacao_tipo[]"]');
+      const container = block.querySelector('.qualificacao_fields');
+      const type = sel.value;
+      let html = '';
+      if (type === 'individuos') {
+        html += `<label class="block text-sm">Nome</label>
+                 <input class="w-full" name="q_nome[]" class="mt-1 block w-full border rounded">`;
+        html += `<label class="block text-sm mt-2">CPF</label>
+                 <input class="w-full" name="q_cpf[]" class="mt-1 block w-full border rounded">`;
+        html += `<label class="block text-sm mt-2">Endereço</label>
+                 <input class="w-full" name="q_endereco[]" class="mt-1 block w-full border rounded">`;
+        html += `<label class="block text-sm mt-2">Telefone</label>
+                 <input class="w-full" name="q_telefone[]" class="mt-1 block w-full border rounded">`;
+        html += `<label class="block text-sm mt-2">Descrição</label>
+                 <textarea name="q_descricao[]" class="mt-1 block w-full border rounded"></textarea>`;
+      } else {
+        html += `<label class="block text-sm">Responsável pelo Informante</label>
+                 <input class="w-full" name="q_nome[]" class="mt-1 block w-full border rounded">`;
+        html += `<label class="block text-sm mt-2">Telefone</label>
+                 <input class="w-full" name="q_telefone[]" class="mt-1 block w-full border rounded">`;
+        html += `<label class="block text-sm mt-2">Descrição</label>
+                 <textarea name="q_descricao[]" class="mt-1 block w-full border rounded"></textarea>`;
+      }
+      container.innerHTML = html;
+    }
+
+    // inicialização e bind de evento change em cada bloco
+    document.querySelectorAll('.qualificacao_block').forEach(block => {
+      const sel = block.querySelector('select[name="qualificacao_tipo[]"]');
+      sel.addEventListener('change', () => renderFields(block));
+      renderFields(block);
+    });
+
+    // adicionar novo bloco
+    document.getElementById('addQualificado').addEventListener('click', () => {
+      const first = document.querySelector('.qualificacao_block');
+      const clone = first.cloneNode(true);
+      // limpar valores
+      clone.querySelectorAll('input, textarea').forEach(i => i.value = '');
+      // re-bind do select/clonagem
+      const sel = clone.querySelector('select[name="qualificacao_tipo[]"]');
+      sel.addEventListener('change', () => renderFields(clone));
+      renderFields(clone);
+      document.getElementById('qualificacao_blocks').appendChild(clone);
+    });
+  </script>
+</body>
+</html>

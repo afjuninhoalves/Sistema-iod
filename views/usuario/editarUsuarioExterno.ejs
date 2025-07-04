@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Editar Usuário Externo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+  <%- include('../partials/sidebar') %>
+
+  <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+    <h1 class="text-2xl font-semibold mb-6">Editar Usuário Externo</h1>
+
+    <div class="bg-white p-6 rounded shadow max-w-3xl">
+      <form class="space-y-4" method="POST" action="/editar-usuario-externo/<%= usuario.id %>" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium">Cidade</label>
+          <select class="w-full" name="cidade_id" class="w-full border p-2 rounded">
+            <% cidades.forEach(c => { %>
+              <option value="<%= c.id %>" <%= usuario.cidade_id === c.id ? 'selected' : '' %>><%= c.cidade %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div><label class="block text-sm">Nome</label><input class="w-full" name="nome" value="<%= usuario.nome %>" class="w-full border p-2 rounded"></div>
+        <div><label class="block text-sm">CPF</label><input class="w-full" name="cpf" value="<%= usuario.cpf %>" class="w-full border p-2 rounded"></div>
+        <div><label class="block text-sm">E-mail</label><input class="w-full" name="email" value="<%= usuario.email %>" class="w-full border p-2 rounded"></div>
+        <div><label class="block text-sm">Função</label><input class="w-full" name="funcao" value="<%= usuario.funcao %>" class="w-full border p-2 rounded"></div>
+        <div><label class="block text-sm">Contato</label><input class="w-full" name="contato" value="<%= usuario.contato %>" class="w-full border p-2 rounded"></div>
+        <label class="block text-sm font-medium">Órgão</label>
+           <select class="w-full" name="orgao" required class="w-full border border-gray-300 rounded px-3 py-2">
+            <option disabled>Selecione o órgão</option>
+            <option value="DETRAN" <%= usuario.orgao === 'DETRAN' ? 'selected' : '' %>>DETRAN</option>
+            <option value="Polícia Civil" <%= usuario.orgao === 'Polícia Civil' ? 'selected' : '' %>>Polícia Civil</option>
+            <option value="Polícia Militar" <%= usuario.orgao === 'Polícia Militar' ? 'selected' : '' %>>Polícia Militar</option>
+            <option value="Ministério Público" <%= usuario.orgao === 'Ministério Público' ? 'selected' : '' %>>Ministério Público</option>
+          </select>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Salvar Alterações
+        </button>
+        <div>
+           <label class="block text-sm">Nova Senha (opcional)</label>
+            <input class="w-full" type="password" name="novaSenha" placeholder="Deixe em branco para não alterar" class="w-full border p-2 rounded">
+        </div>
+      </form>
+    </div>
+  </main>
+</body>
+</html>

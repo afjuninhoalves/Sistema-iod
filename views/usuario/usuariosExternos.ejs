@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Usuários Externos – SistemaCIM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+  <%- include('../partials/sidebar') %>
+
+  <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+    <h1 class="text-2xl font-semibold mb-6">Usuários Externos</h1>
+
+    <div class="bg-white p-4 rounded shadow">
+      <div class="overflow-x-auto"><table class="w-full table-auto border border-gray-300">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="p-2 border">Nome</th>
+            <th class="p-2 border">Cidade</th>
+            <th class="p-2 border">E-mail</th>
+            <th class="p-2 border">Função</th>
+            <th class="p-2 border">Órgão</th>
+            <th class="p-2 border">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% usuarios.forEach(u => { %>
+            <tr class="hover:bg-gray-50">
+              <td class="p-2 border"><%= u.nome %></td>
+              <td class="p-2 border"><%= u.cidade %></td>
+              <td class="p-2 border"><%= u.email %></td>
+              <td class="p-2 border"><%= u.funcao %></td>
+              <td class="p-2 border"><%= u.orgao %></td>
+              <td class="p-2 border text-center">
+                <a href="/editar-usuario-externo/<%= u.id %>" class="text-blue-600 hover:underline">Editar</a>
+                <a href="/excluir-usuario-externo/<%= u.id %>" onclick="return confirm('Tem certeza que deseja excluir este usuário externo?')" class="text-red-600 hover:underline">Excluir</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table></div>
+    </div>
+  </main>
+</body>
+</html>

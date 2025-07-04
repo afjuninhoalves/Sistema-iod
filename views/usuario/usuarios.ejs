@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    <%= typeof title !=='undefined' ? title : 'SistemaCIM' %>
+  </title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="flex h-screen bg-gray-100">
+  <%- include('../partials/sidebar') %>
+
+    <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto" class="flex-1 p-6">
+      <h1 class="text-2xl font-semibold mb-6">Usuários Cadastrados</h1>
+      <div class="overflow-x-auto bg-white rounded-lg shadow">
+        <div class="overflow-x-auto"><table class="min-w-full">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="px-4 py-2">ID</th>
+              <th class="px-4 py-2">Nome</th>
+              <th class="px-4 py-2">Cargo</th>
+              <th class="px-4 py-2">Cidade</th>
+              <th class="px-4 py-2">CPF</th>
+              <th class="px-4 py-2">Telefone</th>
+              <th class="px-4 py-2">Perfil</th>
+              <th class="px-4 py-2">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% usuarios.forEach(function(u) { %>
+              <tr class="border-b">
+                <td class="px-4 py-2">
+                  <%= u.id %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= u.nome_completo %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= u.cargo %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= u.cidade %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= u.cpf %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= u.telefone %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= u.perfil %>
+                </td>
+                <td class="px-4 py-2 space-x-2">
+                  <a href="/editar-usuario/<%= u.id %>" class="text-blue-600">Editar</a>
+
+                  <% if (session.user && session.user.perfil==='admin' ) { %>
+                    <form class="space-y-4" method="POST" action="/usuarios/<%= u.id %>/reiniciar-senha" style="display:inline;">
+                      <button type="submit" class="text-red-600"
+                        onclick="return confirm('Tem certeza que deseja reiniciar a senha deste usuário?')">
+                        Reiniciar Senha
+                      </button>
+                    </form>
+                    <% } %>
+                </td>
+              </tr>
+              <% }); %>
+          </tbody>
+        </table></div>
+      </div>
+    </main>
+
+
+</body>
+
+</html>

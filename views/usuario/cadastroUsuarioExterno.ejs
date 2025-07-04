@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro de Usuário Externo – SistemaCIM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+  <!-- Sidebar -->
+  <%- include('../partials/sidebar') %>
+
+  <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+    <h1 class="text-2xl font-semibold mb-6">Cadastro de Usuário Externo</h1>
+
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-7xl mx-auto">
+      <% if (erro) { %>
+        <div class="bg-red-100 text-red-800 px-4 py-2 rounded mb-4"><%= erro %></div>
+      <% } %>
+
+      <form class="space-y-4" action="/cadastro-usuario-externo" method="POST" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Cidade</label>
+          <select class="w-full" name="cidade_id" class="w-full border border-gray-300 rounded px-3 py-2" required>
+            <% cidades.forEach(c => { %>
+              <option value="<%= c.id %>"><%= c.cidade %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Nome</label>
+          <input class="w-full" name="nome" class="w-full border border-gray-300 rounded px-3 py-2" required>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">CPF</label>
+          <input class="w-full" name="cpf" class="w-full border border-gray-300 rounded px-3 py-2" required>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">E-mail</label>
+          <input class="w-full" type="email" name="email" class="w-full border border-gray-300 rounded px-3 py-2" required>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Senha</label>
+          <input class="w-full" type="password" name="senha" class="w-full border border-gray-300 rounded px-3 py-2" required>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Função</label>
+          <input class="w-full" name="funcao" class="w-full border border-gray-300 rounded px-3 py-2">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Contato</label>
+          <input class="w-full" name="contato" class="w-full border border-gray-300 rounded px-3 py-2">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Órgão</label>
+          <select class="w-full" name="orgao" class="w-full border border-gray-300 rounded px-3 py-2" required>
+          <option value="">Selecione o órgão</option>
+          <option value="DETRAN">DETRAN</option>
+          <option value="Polícia Civil">Polícia Civil</option>
+          <option value="Polícia Militar">Polícia Militar</option>
+          <option value="Ministério Público">Ministério Público</option>
+          </select>
+       </div>
+
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+          Cadastrar Usuário Externo
+        </button>
+      </form>
+    </div>
+  </main>
+</body>
+</html>

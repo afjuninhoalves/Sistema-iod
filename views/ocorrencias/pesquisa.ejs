@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Pesquisa de Ocorrências</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+  <%- include('../partials/sidebar') %>
+
+  <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+    <h1 class="text-2xl font-bold mb-4">Pesquisa de Ocorrências</h1>
+
+    <form class="space-y-4" method="GET" class="mb-6">
+      <input class="w-full" type="text" name="termo" value="<%= termo %>" class="border rounded p-2 w-1/2" placeholder="Digite protocolo, veículo, nome, CPF, etc." />
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded ml-2">Pesquisar</button>
+    </form>
+
+    <% if (resultados.length === 0 && termo) { %>
+      <p class="text-gray-500">Nenhuma ocorrência encontrada com o termo "<%= termo %>".</p>
+    <% } else if (resultados.length > 0) { %>
+      <div class="overflow-x-auto"><table class="min-w-full bg-white rounded shadow">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="text-left px-4 py-2">Protocolo</th>
+            <th class="text-left px-4 py-2">Data do Fato</th>
+            <th class="text-left px-4 py-2">Local</th>
+            <th class="text-left px-4 py-2">Natureza</th>
+            <th class="text-left px-4 py-2">Status</th>
+            <th class="text-left px-4 py-2">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% resultados.forEach(o => { %>
+            <tr class="border-t">
+              <td class="px-4 py-2"><%= o.protocolo %></td>
+              <td class="px-4 py-2"><%= o.data_hora_fato %></td>
+              <td class="px-4 py-2"><%= o.local %></td>
+              <td class="px-4 py-2"><%= o.natureza %></td>
+              <td class="px-4 py-2"><%= o.encerrada ? 'Encerrada' : 'Aberta' %></td>
+              <td class="px-4 py-2">
+                <a href="/detalhes-ocorrencia/<%= o.id %>" class="text-blue-600 hover:underline">Ver detalhes</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table></div>
+    <% } %>
+  </main>
+</body>
+</html>

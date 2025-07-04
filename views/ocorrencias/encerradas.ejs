@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Ocorrências</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+<%- include('../partials/sidebar') %>
+<main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+  <h1 class="text-2xl font-semibold mb-6">Ocorrências Encerradas</h1>
+  <div class="overflow-x-auto"><table class="min-w-full bg-white rounded shadow">
+    <thead>
+      <tr class="bg-gray-200 text-left">
+        <th class="py-2 px-4">Protocolo</th>
+        <th class="py-2 px-4">Data</th>
+        <th class="py-2 px-4">Natureza</th>
+        <th class="py-2 px-4">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% ocorrencias.forEach(function(ocorrencia) { %>
+        <tr class="border-t">
+          <td class="py-2 px-4"><%= ocorrencia.protocolo %></td>
+          <td class="py-2 px-4"><%= ocorrencia.data_hora_fato %></td>
+          <td class="py-2 px-4"><%= ocorrencia.natureza %></td>
+          <td class="py-2 px-4">
+            <a href="/detalhes-ocorrencia/<%= ocorrencia.id %>" class="text-blue-600 underline">Detalhes</a>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table></div>
+</main>
+</body>
+</html>

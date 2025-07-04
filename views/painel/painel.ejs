@@ -1,0 +1,314 @@
+<!-- painel.ejs reconstruído -->
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Estatísticas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="flex h-screen bg-gray-100">
+  <%- include('../partials/sidebar') %>
+
+    <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+      <h1 class="text-3xl font-semibold mb-6">Painel de Estatísticas</h1>
+
+      <!-- Filtros -->
+      <form class="space-y-4" method="GET" action="/painel"
+        class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded shadow">
+        <div>
+          <label class="block text-sm text-gray-600">Cidade</label>
+          <select class="w-full" name="cidade_id" class="w-full border rounded p-2">
+            <option value="">Todas</option>
+            <% cidades.forEach(c=> { %>
+              <option value="<%= c.id %>" <%=(parseInt(c.id)===parseInt(query.cidade_id)) ? 'selected' : '' %>>
+                <%= c.cidade %>
+              </option>
+              <% }) %>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-600">Natureza</label>
+          <input class="w-full" type="text" name="natureza" value="<%= query.natureza || '' %>" class="w-full border rounded p-2"
+            placeholder="Ex: Furto, Roubo" />
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-600">Status</label>
+          <select class="w-full" name="status" class="w-full border rounded p-2">
+            <option value="">Todos</option>
+            <option value="abertas" <%=query.status==='abertas' ? 'selected' : '' %>>Abertas</option>
+            <option value="encerradas" <%=query.status==='encerradas' ? 'selected' : '' %>>Encerradas</option>
+            <option value="reabertas" <%=query.status==='reabertas' ? 'selected' : '' %>>Reabertas</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-600">Tipo de Local</label>
+          <input class="w-full" type="text" name="tipo_local" value="<%= query.tipo_local || '' %>" class="w-full border rounded p-2"
+            placeholder="Ex: Residência, Via pública" />
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-600">Tipo de Envolvido</label>
+          <select class="w-full" name="tipo_envolvido" class="w-full border rounded p-2">
+            <option value="">Todos</option>
+            <option value="Vítima" <%=query.tipo_envolvido==='Vítima' ? 'selected' : '' %>>Vítima</option>
+            <option value="Autor" <%=query.tipo_envolvido==='Autor' ? 'selected' : '' %>>Autor</option>
+            <option value="Suspeito" <%=query.tipo_envolvido==='Suspeito' ? 'selected' : '' %>>Suspeito</option>
+            <option value="Envolvido" <%=query.tipo_envolvido==='Envolvido' ? 'selected' : '' %>>Envolvido</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-600">Data Início</label>
+          <input class="w-full" type="date" name="data_de" value="<%= query.data_de || '' %>" class="w-full border rounded p-2" />
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-600">Data Fim</label>
+          <input class="w-full" type="date" name="data_ate" value="<%= query.data_ate || '' %>" class="w-full border rounded p-2" />
+        </div>
+
+        <div class="md:col-span-4 text-right pt-2">
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Filtrar</button>
+        </div>
+      </form>
+
+      <!-- Cards com estatísticas -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+        <% const stats=dados.stats; %>
+          <div class="bg-white p-4 rounded shadow text-center">
+            <p class="text-sm text-gray-600">Ocorrências Totais</p>
+            <p class="text-2xl font-bold">
+              <%= stats.total || 0 %>
+            </p>
+          </div>
+          <div class="bg-white p-4 rounded shadow text-center">
+            <p class="text-sm text-gray-600">Abertas</p>
+            <p class="text-2xl font-bold">
+              <%= stats.abertas || 0 %>
+            </p>
+          </div>
+          <div class="bg-white p-4 rounded shadow text-center">
+            <p class="text-sm text-gray-600">Encerradas</p>
+            <p class="text-2xl font-bold">
+              <%= stats.encerradas || 0 %>
+            </p>
+          </div>
+          <div class="bg-white p-4 rounded shadow text-center">
+            <p class="text-sm text-gray-600">Liberadas</p>
+            <p class="text-2xl font-bold">
+              <%= dados.liberadas || 0 %>
+            </p>
+          </div>
+          <div class="bg-white p-4 rounded shadow text-center">
+            <p class="text-sm text-gray-600">Reabertas</p>
+            <p class="text-2xl font-bold">
+              <%= stats.reabertas || 0 %>
+            </p>
+          </div>
+          <div class="bg-white p-4 rounded shadow text-center">
+            <p class="text-sm text-gray-600">Cidades</p>
+            <p class="text-2xl font-bold">
+              <%= dados.cidades || 0 %>
+            </p>
+          </div>
+          <div class="bg-white p-4 rounded shadow text-center">
+            <p class="text-sm text-gray-600">Usuários Ativos</p>
+            <p class="text-2xl font-bold">
+              <%= dados.usuarios || 0 %>
+            </p>
+          </div>
+          <div class="bg-white p-4 rounded shadow text-center">
+            <p class="text-sm text-gray-600">Solicitações Recebidas</p>
+            <p class="text-2xl font-bold">
+              <%= dados.solicitacoes.total || 0 %>
+            </p>
+          </div>
+          <div class="bg-white p-4 rounded shadow text-center">
+            <p class="text-sm text-gray-600">Solicitações Respondidas</p>
+            <p class="text-2xl font-bold">
+              <%= dados.solicitacoes.respondidas || 0 %>
+            </p>
+          </div>
+      </div>
+
+      <!-- Gráficos -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-lg font-bold mb-2">Por Cidade</h2>
+          <canvas id="graficoCidade" height="200"></canvas>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-lg font-bold mb-2">Por Natureza</h2>
+          <canvas id="graficoNatureza" height="200"></canvas>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-lg font-bold mb-2">Por Status</h2>
+          <canvas id="graficoStatus" height="200"></canvas>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-lg font-bold mb-2">Por Usuário</h2>
+          <canvas id="graficoUsuario" height="200"></canvas>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-lg font-bold mb-2">Liberadas por Cidade</h2>
+          <canvas id="graficoBarras"></canvas>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-lg font-bold mb-2">Encerradas vs Liberadas</h2>
+          <canvas id="graficoPizza"></canvas>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-lg font-bold mb-2">Solicitações por Órgão</h2>
+          <canvas id="graficoOrgao"></canvas>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-lg font-bold mb-2">Solicitações por Cidade</h2>
+          <canvas id="graficoCidadeSolic"></canvas>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-lg font-bold mb-2">Total x Respondidas</h2>
+          <canvas id="graficoSolicitacoesPizza"></canvas>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-lg font-bold mb-2">Encerradas por Cidade</h2>
+          <canvas id="graficoEncerradasCidade"></canvas>
+        </div>
+      </div>
+
+      <!-- Tabela de ocorrências recentes -->
+      <div class="bg-white shadow p-4 rounded-lg mb-6">
+        <h2 class="text-xl font-bold mb-4">Ocorrências Recentes</h2>
+        <div class="overflow-x-auto"><table class="min-w-full text-sm text-left">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="px-4 py-2">Protocolo</th>
+              <th class="px-4 py-2">Cidade</th>
+              <th class="px-4 py-2">Responsável</th>
+              <th class="px-4 py-2">Status</th>
+              <th class="px-4 py-2">Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% dados.recentes.forEach(o=> { %>
+              <tr>
+                <td class="px-4 py-2">
+                  <%= o.protocolo %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= o.cidade %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= o.usuario %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= o.status %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= o.data_hora_fato.split(' ')[0] %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table></div>
+    </div>
+
+    <!-- Botões PDF / Excel -->
+    <div class="text-right mb-6">
+      <a id="btnExportarPDF" class="bg-red-600 text-white px-4 py-2 rounded mr-2 hover:bg-red-700">📄 Exportar PDF</a>
+      <a id="btnExportarExcel" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">📊 Exportar Excel</a>
+    </div>
+
+  </main>
+<script>
+  window.onload = function () {
+    const dadosCidade = <%- JSON.stringify(dados.cities || []) %>;
+    const dadosNatureza = <%- JSON.stringify(dados.naturezas || []) %>;
+    const dadosUsuario = <%- JSON.stringify(dados.porUsuario || []) %>;
+    const dadosLiberadasCidade = <%- JSON.stringify(dados.liberadasPorCidade || []) %>;
+    const dadosOrgao = <%- JSON.stringify(dados.porOrgao || []) %>;
+    const dadosCidadeSolic = <%- JSON.stringify(dados.porCidadeSolic || []) %>;
+    const encerradasCidade = <%- JSON.stringify(dados.encerradasPorCidade || []) %>;
+    const valoresStatus = <%- JSON.stringify(dados.stats || {}) %>;
+    const encerradas = <%- dados.stats.encerradas || 0 %>;
+    const liberadas = <%- dados.liberadas || 0 %>;
+    const totalSolic = <%- dados.solicitacoes.total || 0 %>;
+    const respSolic = <%- dados.solicitacoes.respondidas || 0 %>;
+
+    // Função para criar gráfico somente se tiver dados
+    function criarGrafico(id, tipo, labels, data, label = '', backgroundColor = []) {
+      if (!data || !data.length) return;
+      new Chart(document.getElementById(id), {
+        type: tipo,
+        data: {
+          labels: labels,
+          datasets: [{
+            label: label,
+            data: data,
+            backgroundColor: backgroundColor.length ? backgroundColor : ['#36a2eb', '#ff6384', '#ffcd56', '#4bc0c0']
+          }]
+        }
+      });
+    }
+
+    criarGrafico('graficoCidade', 'pie', dadosCidade.map(e => e.label), dadosCidade.map(e => e.count));
+    criarGrafico('graficoNatureza', 'bar', dadosNatureza.map(e => e.label), dadosNatureza.map(e => e.count), 'Ocorrências', ['#36a2eb']);
+    criarGrafico('graficoUsuario', 'pie', dadosUsuario.map(e => e.label), dadosUsuario.map(e => e.count));
+    criarGrafico('graficoBarras', 'bar', dadosLiberadasCidade.map(e => e.label), dadosLiberadasCidade.map(e => e.count), 'Liberadas', ['#3B82F6']);
+    criarGrafico('graficoOrgao', 'bar', dadosOrgao.map(e => e.orgao), dadosOrgao.map(e => e.total), 'Solicitações', ['#10B981']);
+    criarGrafico('graficoCidadeSolic', 'bar', dadosCidadeSolic.map(e => e.cidade), dadosCidadeSolic.map(e => e.total), 'Solicitações', ['#6366F1']);
+    criarGrafico('graficoEncerradasCidade', 'bar', encerradasCidade.map(e => e.cidade), encerradasCidade.map(e => e.total), 'Encerradas', ['#EF4444']);
+
+    // Gráfico de status sempre renderiza (mesmo com 0)
+    new Chart(document.getElementById('graficoStatus'), {
+      type: 'pie',
+      data: {
+        labels: ['Abertas', 'Encerradas', 'Reabertas'],
+        datasets: [{
+          data: [valoresStatus.abertas || 0, valoresStatus.encerradas || 0, valoresStatus.reabertas || 0],
+          backgroundColor: ['#36a2eb', '#ff6384', '#ffcd56']
+        }]
+      }
+    });
+
+    // Gráfico de pizza de Encerradas vs Liberadas
+    new Chart(document.getElementById('graficoPizza'), {
+      type: 'pie',
+      data: {
+        labels: ['Encerradas', 'Liberadas'],
+        datasets: [{
+          data: [encerradas, liberadas],
+          backgroundColor: ['#F59E0B', '#3B82F6']
+        }]
+      }
+    });
+
+    // Gráfico de pizza de Solicitações
+    new Chart(document.getElementById('graficoSolicitacoesPizza'), {
+      type: 'pie',
+      data: {
+        labels: ['Total', 'Respondidas'],
+        datasets: [{
+          data: [totalSolic, respSolic],
+          backgroundColor: ['#F59E0B', '#10B981']
+        }]
+      }
+    });
+
+    // Botões de exportação
+    const query = <%- JSON.stringify(query || {}) %>;
+    const params = new URLSearchParams(query).toString();
+    document.getElementById("btnExportarPDF").href = "/painel/pdf?" + params;
+    document.getElementById("btnExportarExcel").href = "/painel/excel?" + params;
+  };
+</script>
+
+
+    </main>
+</body>
+
+</html>

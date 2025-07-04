@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detalhes da Ação Conjunta - SistemaCIM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col h-screen">
+
+  <!-- Sidebar + Conteúdo -->
+  <div class="flex flex-1 bg-gray-100 overflow-hidden">
+    <%- include('../partials/sidebar') %>
+
+    <main class="max-w-screen p-4" class="flex-1 overflow-y-auto p-6 space-y-6">
+      <!-- Cabeçalho -->
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-semibold">Ação Conjunta #<%= acao.id %></h1>
+        <div class="space-x-2">
+          <a href="/acoes-conjuntas/<%= acao.id %>/edit"
+             class="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+            Editar Ação
+          </a>
+          <a href="/acoes-conjuntas/<%= acao.id %>/adicionar"
+             class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+            Adicionar Ação por Cidade
+          </a>
+        </div>
+      </div>
+
+      <!-- Dados Gerais -->
+      <div class="bg-white p-6 rounded shadow">
+        <p><strong>Responsável:</strong> <%= acao.cidade_responsavel %></p>
+        <p><strong>Objetivo:</strong> <%= acao.objetivo %></p>
+      </div>
+
+      <!-- Cidades Participantes -->
+      <div class="bg-white p-6 rounded shadow">
+        <h2 class="text-lg font-medium mb-4">Cidades Participantes</h2>
+        <ul class="list-disc list-inside">
+          <% participantes.forEach(p => { %>
+            <li><%= p.cidade %></li>
+          <% }) %>
+        </ul>
+      </div>
+
+      <!-- Ações por Cidade -->
+      <div class="bg-white p-6 rounded shadow">
+        <h2 class="text-lg font-medium mb-4">Ações por Cidade</h2>
+        <ul class="divide-y divide-gray-200">
+          <% acoesCidade.forEach(item => { %>
+            <li class="py-6">
+              <!-- Data/Hora e Cidade -->
+              <p class="text-sm text-gray-500 mb-2">
+                [<%= new Date(item.data_hora).toLocaleString('pt-BR') %>] 
+                <strong><%= item.cidade_participante %></strong>
+              </p>
+
+              <!-- Responsável e Descrição -->
+              <p class="mb-2">
+                <span class="font-semibold"><%= item.responsavel %></span> – 
+                <%= item.descricao %>
+              </p>
+
+              <!-- Qualificadores -->
+              <div class="mt-4">
+                <h3 class="font-medium">Qualificados nesta ação:</h3>
+                <ul class="list-disc list-inside mt-1">
+                  <% item.qualificadores.forEach(q => { %>
+                    <li class="mb-2">
+                      <span class="font-semibold">
+                        <%= q.tipo === 'individuos' ? 'Indivíduo' : 'Informante' %>:
+                      </span>
+                      <%= q.nome %>
+                      <% if (q.cpf) { %> | CPF: <%= q.cpf %> <% } %>
+                      <% if (q.endereco) { %> | Endereço: <%= q.endereco %> <% } %>
+                      | Telefone: <%= q.telefone %>
+                      <p class="text-sm text-gray-600 mt-1"><%= q.descricao %></p>
+                    </li>
+                  <% }) %>
+                </ul>
+              </div>
+
+              <!-- Mídias -->
+              <% if (item.arquivos.length) { %>
+                <div class="mt-4 grid grid-cols-3 gap-4">
+                  <% item.arquivos.forEach((file, i) => { 
+                       const tipo = item.tipos[i];
+                  %>
+                    <div class="border p-2 rounded">
+                      <% if (tipo === 'video') { %>
+                        <video class="w-full h-32 object-cover" controls>
+                          <source src="/uploads/<%= file %>" type="video/mp4">
+                        </video>
+                      <% } else { %>
+                        <audio controls class="w-full">
+                          <source src="/uploads/<%= file %>" type="audio/mpeg">
+                        </audio>
+                      <% } %>
+                      <p class="mt-2 text-xs text-gray-500 truncate"><%= file %></p>
+                    </div>
+                  <% }) %>
+                </div>
+              <% } %>
+
+              <!-- Botões -->
+              <div class="mt-4 space-x-2">
+                <a href="/acoes-conjuntas/<%= acao.id %>/acao-por-cidade/<%= item.id %>/editar"
+                   class="inline-flex items-center px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+                  Editar
+                </a>
+                <a href="/acoes-conjuntas/<%= acao.id %>/acao-por-cidade/<%= item.id %>"
+                   class="inline-flex items-center px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+                  Detalhes
+                </a>
+              </div>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

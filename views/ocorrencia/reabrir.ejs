@@ -1,0 +1,22 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Reabrir Ocorrência</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Reabrir Ocorrência</h1>
+        <form class="space-y-4" method="POST" action="/ocorrencia/<%= id %>/reabrir">
+            <div class="form-group">
+                <label for="motivo_reabertura">Motivo da Reabertura:</label>
+                <textarea name="motivo" id="motivo_reabertura" class="form-control" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Confirmar Reabertura</button>
+            <a href="/ocorrencias-encerradas" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</body>
+</html>

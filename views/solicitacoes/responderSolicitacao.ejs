@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Responder Solicitação</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+</head>
+
+<body class="flex h-screen bg-gray-100">
+  <%- include('../partials/sidebar') %>
+
+    <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+      <h1 class="text-2xl font-semibold mb-6">Responder Solicitação</h1>
+
+      <p><strong>Título:</strong>
+        <%= solicitacao.titulo %>
+      </p>
+      <p><strong>Descrição:</strong>
+        <%= solicitacao.descricao %>
+      </p>
+    <p><strong>Cidade:</strong> <%= solicitacao.nome_cidade %></p>
+
+      <form class="space-y-4" method="POST" action="/solicitacoes/<%= solicitacao.id %>/responder" enctype="multipart/form-data">
+        <% if (solicitacao.anexo) { %>
+          <div class="mb-4">
+            <label class="block text-sm font-semibold mb-1">Anexo atual:</label>
+            <a href="/uploads/<%= solicitacao.anexo %>" target="_blank" class="text-blue-600 underline">
+              📎 <%= solicitacao.anexo %>
+            </a>
+          </div>
+          <% } %>
+
+            <div class="mb-4">
+              <label class="block text-sm font-medium">Resposta</label>
+              <textarea name="resposta" class="w-full border border-gray-300 rounded px-3 py-2" rows="5"
+                required></textarea>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700">Anexar Documento (PDF ou DOC)</label>
+              <input class="w-full" type="file" name="anexo" accept=".pdf,.doc,.docx"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Vincular Ocorrências Encerradas (opcional)</label>
+              <select class="w-full" name="ocorrencias_ids[]" multiple id="ocorrencias-select" class="w-full border rounded p-2">
+                <% ocorrenciasEncerradas.forEach(o=> { %>
+                  <option value="<%= o.id %>">
+                    <%= o.protocolo %> - <%= o.cidade || 'Sem cidade' %> - <%= o.natureza %> - <%=
+                            o.data_hora_fato.split(' ')[0] %>
+                  </option>
+                <% }) %>
+             </select>
+              </div>
+
+            <div class="flex justify-end gap-3">
+              <a href="/solicitacoes" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancelar</a>
+              <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Enviar
+                Resposta</button>
+            </div>
+      </form>
+      </div>
+      <script>
+        $(document).ready(function () {
+          $(' #ocorrencias-select').select2({ placeholder: 'Buscar e selecionar ocorrências' });
+        }); </script>
+    </main>
+</body>
+
+</html>

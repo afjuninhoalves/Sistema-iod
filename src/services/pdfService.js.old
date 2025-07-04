@@ -1,0 +1,181 @@
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const path = require('path');
+
+/**
+ * Gera um relatório de ocorrência em PDF com estilo aprimorado.
+ * @param {Object} ocorrencia   - Dados da ocorrência.
+ * @param {Array}  complementos - Informações complementares.
+ * @param {Object} user         - Usuário que emite o relatório (com nome_completo e cargo).
+ * @param {Object} res          - Objeto de resposta do Express.
+ */
+function gerarRelatorio(ocorrencia, complementos, user, res) {
+  // Permite numeração de páginas
+  const doc = new PDFDocument({ margin: 40, bufferPages: true });
+
+  // Headers HTTP
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader(
+    'Content-Disposition',
+    `attachment; filename=ocorrencia_${ocorrencia.protocolo}.pdf`
+  );
+  doc.pipe(res);
+
+  const uploadBase = path.join(__dirname, '../../uploads');
+  const pageW = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+
+  // ================== Cabeçalho Original ==================
+  const cimLogo = path.join(__dirname, '../../public/images/cim_logo.jpg');
+  if (fs.existsSync(cimLogo)) {
+    doc.image(cimLogo, 40, 30, { width: 80 });
+  }
+  if (ocorrencia.cidade_logo) {
+    const cityLogo = path.join(uploadBase, ocorrencia.cidade_logo);
+    if (fs.existsSync(cityLogo)) {
+      doc.image(cityLogo, doc.page.width - 120, 30, { width: 80 });
+    }
+  }
+  doc.moveDown(3)
+    .font('Helvetica-Bold').fontSize(22).text('Estudo de Caso para Ação Preventiva', { align: 'center' })
+    .moveDown(0.5).fontSize(18).text('C.I.M. ( Centro de Inteligência Metropolitano )', { align: 'center' })
+    .moveDown(0.5).fontSize(14).text('Região Metropolitana de Campinas', { align: 'center' })
+    .moveDown(0.5).text(ocorrencia.corporacao || '—', { align: 'center' });
+
+  // Banner vermelho
+  const bannerW = doc.page.width - 80;
+  const bannerX = 40;
+  const bannerY = doc.y;
+  doc.save()
+    .rect(bannerX, bannerY, bannerW, 25).fill('#FF0000')
+    .fillColor('#FFFFFF').fontSize(12)
+    .text('INFORMAÇÃO RESERVADA', bannerX, bannerY + 6, { width: bannerW, align: 'center' })
+    .restore().fillColor('#000000');
+
+  // ================== Dados Principais em Tabela ==================
+  doc.moveDown(2);
+  const labels = [
+    'Protocolo', 'Data/Hora Registro', 'Data/Hora Fato',
+    'Cidade', 'Local', 'Tipo Local', 'Natureza', 'Descrição'
+  ];
+  const values = [
+    ocorrencia.protocolo,
+    ocorrencia.data_hora_registro,
+    ocorrencia.data_hora_fato,
+    ocorrencia.cidade_nome || '—',
+    ocorrencia.local || '—',
+    ocorrencia.tipo_local || '—',
+    ocorrencia.natureza || '—',
+    ocorrencia.descricao || '—'
+  ];
+  const xLabel = doc.page.margins.left;
+  const xValue = xLabel + 120;
+  labels.forEach((label, i) => {
+    const y = doc.y;
+    doc.font('Helvetica-Bold').fontSize(12).text(label + ':', xLabel, y);
+    doc.font('Helvetica').fontSize(12).text(values[i], xValue, y, {
+      width: doc.page.width - xValue - doc.page.margins.right,
+      align: 'left'
+    });
+    // Avança para próxima linha com espaçamento fixo
+    const lineHeight = doc.currentLineHeight();
+    doc.y = y + lineHeight + 4;
+  });
+  // Linha de separação
+
+  doc.moveDown(1.5).font('Helvetica-Bold').fontSize(14).text('Veículos:', { underline: true });
+  const veiculos = ocorrencia.veiculos || [];
+  veiculos.forEach((v, idx) => {
+    doc.font('Helvetica').fontSize(12)
+      .text(`Veículo ${idx + 1}: ${v.marca_modelo || '----'} | Cor: ${v.cor || '----'} | Placa: ${v.placa || '----'}`);
+  });
+
+  doc.moveDown(1).font('Helvetica-Bold').fontSize(14).text('Envolvidos:', { underline: true });
+  const envolvidos = ocorrencia.envolvidos || [];
+  envolvidos.forEach((e, idx) => {
+    doc.font('Helvetica').fontSize(12)
+      .text(`Envolvido ${idx + 1}: ${e.tipo || '----'} - ${e.nome || '----'} - CPF: ${e.cpf || '----'} - Tel: ${e.telefone || '----'} - Endereço: ${e.endereco || '----'}`);
+  });
+
+  doc.moveDown(1).font('Helvetica-Bold').fontSize(14).text('Armas:', { underline: true });
+  const armas = ocorrencia.armas || [];
+  armas.forEach((a, idx) => {
+    doc.font('Helvetica').fontSize(12).text(`Arma ${idx + 1}: ${a}`);
+  });
+  doc.moveDown(0.5)
+    .strokeColor('#CCCCCC').lineWidth(0.5)
+    .moveTo(doc.page.margins.left, doc.y)
+    .lineTo(doc.page.width - doc.page.margins.right, doc.y)
+    .stroke();
+
+  // Linha de separação
+  doc.moveDown(0.5)
+    .strokeColor('#CCCCCC').lineWidth(0.5)
+    .moveTo(doc.page.margins.left, doc.y)
+    .lineTo(doc.page.width - doc.page.margins.right, doc.y)
+    .stroke();
+
+  // ================== Complementos 2 por página ==================
+  if (complementos && complementos.length) {
+    const pageH = doc.page.height - doc.page.margins.top - doc.page.margins.bottom;
+    const slotH = pageH / 2;
+    complementos.forEach((comp, idx) => {
+      if (idx % 2 === 0) doc.addPage();
+      const row = idx % 2;
+      const y0 = doc.page.margins.top + row * slotH;
+
+      // Box suave de fundo
+      doc.save().rect(doc.page.margins.left, y0, pageW, slotH)
+        .fillOpacity(0.05).fill('#000000').restore().fillOpacity(1);
+
+      // Texto do complemento
+      doc.font('Helvetica-Bold').fontSize(12)
+        .text(`Descrição:`, doc.page.margins.left + 10, y0 + 10);
+      doc.font('Helvetica').text(comp.descricao || '—', 120, y0 + 10);
+      doc.font('Helvetica-Bold').text(
+        `Data/Hora:`, doc.page.margins.left + 10, y0 + 30
+      ).font('Helvetica').text(
+        `${comp.data || ''} ${comp.hora || ''}`, 120, y0 + 30
+      );
+      doc.font('Helvetica-Bold').text(
+        `Local:`, doc.page.margins.left + 10, y0 + 50
+      ).font('Helvetica').text(
+        comp.local || '—', 120, y0 + 50
+      );
+
+      // Imagem
+      if (comp.arquivo) {
+        const imgPath = path.join(uploadBase, comp.arquivo);
+        if (fs.existsSync(imgPath)) {
+          doc.image(imgPath,
+            doc.page.margins.left + 10,
+            y0 + 70,
+            { fit: [pageW - 20, slotH - 80], align: 'center', valign: 'center' }
+          );
+        }
+      }
+    });
+  }
+
+  // ================== Página de Assinatura ==================
+  doc.addPage();
+  const pageH = doc.page.height - doc.page.margins.top - doc.page.margins.bottom;
+  const midY = doc.page.margins.top + pageH / 2;
+
+  doc.font('Helvetica').fontSize(12)
+    .text('Este relatório é confidencial e foi emitido por:',
+      doc.page.margins.left, doc.page.margins.top,
+      { width: pageW, align: 'center' });
+  doc.font('Helvetica-Bold').fontSize(16)
+    .text(user.nome_completo,
+      doc.page.margins.left, midY - 10,
+      { width: pageW, align: 'center' });
+  doc.font('Helvetica').fontSize(14)
+    .text(user.cargo,
+      doc.page.margins.left, midY + 20,
+      { width: pageW, align: 'center' });
+
+  // Finaliza documento sem numeração de página
+  doc.end();
+}
+
+module.exports = gerarRelatorio;

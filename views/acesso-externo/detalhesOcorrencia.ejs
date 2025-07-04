@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Detalhes da Ocorrência – Acesso Externo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+  <%- include('../partials/sidebar_externo') %>
+
+  <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+    <h1 class="text-2xl font-bold mb-6">Detalhes da Ocorrência</h1>
+
+     <div class="flex justify-end gap-2 mb-4">
+      <a href="/externo/ocorrencia/<%= ocorrencia.id %>/pdf" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">📄 Gerar PDF</a>
+      <a href="/externo/ocorrencia/<%= ocorrencia.id %>/midias" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">🖼️ Ver Mídias</a>
+    </div>
+
+    <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+      <p><strong>Protocolo:</strong> <%= ocorrencia.protocolo %></p>
+      <p><strong>Data/Hora do Fato:</strong> <%= ocorrencia.data_hora_fato %></p>
+      <p><strong>Local:</strong> <%= ocorrencia.local %></p>
+      <p><strong>Tipo do Local:</strong> <%= ocorrencia.tipo_local %></p>
+      <p><strong>Natureza:</strong> <%= ocorrencia.natureza %></p>
+      <p><strong>Descrição:</strong> <%= ocorrencia.descricao %></p>
+
+      <p><strong>Veículos:</strong></p>
+        <% if (veiculos.length > 0) { %>
+        <ul class="ml-4 list-disc">
+         <% veiculos.forEach(v => { %>
+         <li><strong>Modelo:</strong> <%= v.marca_modelo %>, <strong>Cor:</strong> <%= v.cor %>, <strong>Placa:</strong> <%= v.placa %></li>
+         <% }) %>
+        </ul>
+      <% } else { %> ---- <% } %>
+
+      <p><strong>Envolvidos:</strong></p>
+         <% if (envolvidos.length > 0) { %>
+         <ul class="ml-4 list-disc">
+          <% envolvidos.forEach(e => { %>
+          <li>
+        <strong>Tipo:</strong> <%= e.tipo %>,
+        <strong>Nome:</strong> <%= e.nome %>,
+        <strong>CPF:</strong> <%= e.cpf %>,
+        <strong>Telefone:</strong> <%= e.telefone %>,
+        <strong>Endereço:</strong> <%= e.endereco %>
+      </li>
+    <% }) %>
+  </ul>
+<% } else { %> ---- <% } %>
+
+      <p><strong>Armas:</strong> <%= ocorrencia.armas || '----' %></p>
+      <p><strong>Cidade:</strong> <%= ocorrencia.cidade_nome || '----' %></p>
+
+      <% if (ocorrencia.documento) { %>
+        <p><strong>Documento:</strong> <a class="text-blue-600 underline" href="/uploads/<%= ocorrencia.documento %>" target="_blank">Visualizar</a></p>
+      <% } else { %>
+        <p><strong>Documento:</strong> Nenhum documento anexado.</p>
+      <% } %>
+    </div>
+
+   
+    <div class="bg-white p-4 rounded-lg shadow">
+      <h2 class="text-xl font-semibold mb-4">Informações Complementares</h2>
+      <% if (complementos.length === 0) { %>
+        <p class="text-gray-500">Nenhuma informação complementar cadastrada.</p>
+      <% } else { %>
+        <% complementos.forEach(c => { %>
+          <div class="mb-4 border-b pb-4">
+            <p><strong>Descrição:</strong> <%= c.descricao %></p>
+            <p><strong>Data:</strong> <%= c.data %> — <strong>Hora:</strong> <%= c.hora %></p>
+            <p><strong>Local:</strong> <%= c.local %></p>
+            <% if (c.arquivo) { %>
+              <p><strong>Imagem:</strong></p>
+              <img src="/uploads/<%= c.arquivo %>" alt="Imagem Complementar" class="mt-2 w-full max-w-4xl rounded shadow">
+            <% } %>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </main>
+</body>
+</html>

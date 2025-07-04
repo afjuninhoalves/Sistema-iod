@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Home - SistemaCIM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+  <!-- Sidebar -->
+<%- include('../partials/sidebar') %>
+
+  <!-- Main content -->
+  <main
+ class="flex-1 p-6 overflow-y-auto">
+    <h1 class="text-2xl font-semibold mb-6">Cidades Cadastradas</h1>
+    <div class="overflow-x-auto">
+      <div class="overflow-x-auto"><table class="min-w-full bg-white rounded-lg shadow-md overflow-hidden">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Logo</th>
+            <th class="px-4 py-2">Cidade</th>
+            <th class="px-4 py-2">Corporação</th>
+            <th class="px-4 py-2">Comandante</th>
+            <th class="px-4 py-2">Contato</th>
+            <th class="px-4 py-2">Inteligência</th>
+            <th class="px-4 py-2">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% cidades.forEach(function(c) { %>
+          <tr class="border-b">
+            <td class="px-4 py-2"><%= c.id %></td>
+            <td class="px-4 py-2"><% if (c.logo) { %><img class="h-12 w-12 object-contain inline-block" src="/uploads/<%= c.logo %>" class="logo-img city-logo"/> <% } %></td>
+            <td class="px-4 py-2"><%= c.cidade %></td>
+            <td class="px-4 py-2"><%= c.corporacao %></td>
+            <td class="px-4 py-2"><%= c.comandante %></td>
+            <td class="px-4 py-2"><%= c.telefone_contato %></td>
+            <td class="px-4 py-2"><%= c.telefone_inteligencia %></td>
+            <td class="px-4 py-2"><a href="/editar-cidade/<%= c.id %>" class="text-blue-600 hover:underline">Editar</a></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table></div>
+    </div>
+</main>
+</body>
+</html>

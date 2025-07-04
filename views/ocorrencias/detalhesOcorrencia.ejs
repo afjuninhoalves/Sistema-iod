@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Detalhes da Ocorrência</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="flex h-screen bg-gray-100">
+  <%- include('../partials/sidebar') %>
+    <main class="max-w-screen p-4 flex-1 p-6 overflow-y-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-semibold">Detalhes da Ocorrência</h1>
+        <div class="acao">
+          <a href="/detalhes-ocorrencia/<%= ocorrencia.id %>/pdf"
+            class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Gerar PDF</a>
+          <a href="/ocorrencia/<%= ocorrencia.id %>/midias"
+            class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2">Mídias</a>
+        </div>
+        <% if (ocorrencia.encerrada===0) { %>
+          <a href="/ocorrencia/<%= ocorrencia.id %>/editar"
+            class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">✏️ Editar Ocorrência</a>
+          <button onclick="document.getElementById('modalEncerrar').classList.remove('hidden')"
+            class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 ml-2">🔒 Encerrar Ocorrência</button>
+          <% } %>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-md space-y-4">
+        <p><strong>Protocolo:</strong>
+          <%= ocorrencia.protocolo %>
+        </p>
+        <p><strong>Data/Hora do Fato:</strong>
+          <%= ocorrencia.data_hora_fato %><br><strong>Cidade:</strong>
+            <%= ocorrencia.cidade_nome || "Não informada" %>
+        </p>
+        <p><strong>Local:</strong>
+          <%= ocorrencia.local %>
+        </p>
+        <p><strong>Tipo do Local:</strong>
+          <%= ocorrencia.tipo_local %>
+        </p>
+        <p><strong>Natureza:</strong>
+          <%= ocorrencia.natureza %>
+        </p>
+        <p><strong>Descrição:</strong>
+          <%= ocorrencia.descricao %>
+        </p>
+
+        <p><strong>Veículos:</strong></p>
+        <% if (veiculos.length===0) { %>
+          <p class="ml-4">----</p>
+          <% } else { %>
+            <% veiculos.forEach(function(v) { %>
+              <p class="ml-4">
+                <strong>Modelo:</strong>
+                <%= v.marca_modelo || '----' %>,
+                  <strong>Cor:</strong>
+                  <%= v.cor || '----' %>,
+                    <strong>Placa:</strong>
+                    <%= v.placa || '----' %>
+              </p>
+              <% }); %>
+                <% } %>
+
+                  <p><strong>Envolvidos:</strong></p>
+                  <% if (envolvidos.length===0) { %>
+                    <p class="ml-4">----</p>
+                    <% } else { %>
+                      <% envolvidos.forEach(function(e) { %>
+                        <p class="ml-4">
+                          <strong>Tipo:</strong>
+                          <%= e.tipo %>,
+                            <strong>Nome:</strong>
+                            <%= e.nome %>,
+                              <strong>CPF:</strong>
+                              <%= e.cpf %>,
+                                <strong>Telefone:</strong>
+                                <%= e.telefone %>,
+                                  <strong>Endereço:</strong>
+                                  <%= e.endereco %>
+                        </p>
+                        <% }); %>
+                          <% } %>
+
+                            <p><strong>Armas:</strong></p>
+                            <% (ocorrencia.armas || '' ).split(', ').forEach(function(a) { %>
+        <p class="ml-4"><%= a %></p>
+      <% }); %>
+
+      <% if (ocorrencia.documento) { %>
+        <p><strong>Documento:</strong> <a href="/uploads/<%= ocorrencia.documento %>" target="_blank" class="text-blue-600 underline">Download</a></p>
+      <% } else { %>
+        <p><strong>Documento:</strong> Nenhum documento anexado.</p>
+      <% } %>
+    </div>
+
+    <div class="mt-10">
+      <h2 class="text-xl font-semibold mb-4">Informações Complementares</h2>
+      <% if (!ocorrencia.encerrada) { %>
+        <a href="/ocorrencia/<%= ocorrencia.id %>/complemento" class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">➕ Adicionar Complemento</a>
+        <a href="/ocorrencia/<%= ocorrencia.id %>/fato" class="inline-flex items-center bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 ml-2">📝 Novo Fato</a>
+      <% } %>
+
+      <% if (complementos.length === 0) { %>
+        <p class="text-gray-500">Nenhuma informação complementar registrada.</p>
+      <% } else { %>
+        <ul class="space-y-4">
+          <% complementos.forEach(function(comp) { %>
+            <li class="bg-white shadow p-4 rounded-lg">
+              <% if (comp.tipo === 'fato') { %>
+                              <p><strong>Data/Hora do Fato:</strong>
+                                <%= comp.data_hora || '----' %>
+                              </p>
+                              <p><strong>Cidade:</strong>
+                                <%= comp.cidade_nome || '----' %>
+                              </p>
+                              <p><strong>Local:</strong>
+                                <%= comp.local || '----' %>
+                              </p>
+                              <p><strong>Tipo do Local:</strong>
+                                <%= comp.tipo_local || '----' %>
+                              </p>
+                              <p><strong>Natureza:</strong>
+                                <%= comp.natureza || '----' %>
+                              </p>
+                              <p><strong>Descrição:</strong>
+                                <%= comp.descricao || '----' %>
+                              </p>
+
+                              <p class="mt-4"><strong>Veículos:</strong></p>
+                              <% if (!comp.veiculosFato || comp.veiculosFato.length===0) { %>
+                                <p class="ml-4">----</p>
+                                <% } else { %>
+                                  <% comp.veiculosFato.forEach(function(v) { %>
+                                    <p class="ml-4">
+                                      <strong>Modelo:</strong>
+                                      <%= v.marca_modelo || '----' %>,
+                                        <strong>Cor:</strong>
+                                        <%= v.cor || '----' %>,
+                                          <strong>Placa:</strong>
+                                          <%= v.placa || '----' %>
+                                    </p>
+                                    <% }); %>
+                                      <% } %>
+
+                                        <p class="mt-4"><strong>Envolvidos:</strong></p>
+                                        <% if (!comp.envolvidosFato || comp.envolvidosFato.length===0) { %>
+                                          <p class="ml-4">----</p>
+                                          <% } else { %>
+                                            <% comp.envolvidosFato.forEach(function(e) { %>
+                                              <p class="ml-4">
+                                                <strong>Tipo:</strong>
+                                                <%= e.tipo %>,
+                                                  <strong>Nome:</strong>
+                                                  <%= e.nome %>,
+                                                    <strong>CPF:</strong>
+                                                    <%= e.cpf %>,
+                                                      <strong>Telefone:</strong>
+                                                      <%= e.telefone %>,
+                                                        <strong>Endereço:</strong>
+                                                        <%= e.endereco %>
+                                              </p>
+                                              <% }); %>
+                                                <% } %>
+
+                                                  <p class="mt-4"><strong>Armas:</strong></p>
+                                                  <p class="ml-4">
+                                                    <%= comp.armas || '----' %>
+                                                  </p>
+
+                                                  <p class="mt-4"><strong>Documento:</strong>
+                                                    <% if (comp.documento) { %>
+                                                      <a href="/uploads/<%= comp.documento %>" target="_blank"
+                                                        class="text-blue-600 underline">Download</a>
+                                                      <% } else { %>
+                                                        Nenhum documento anexado.
+                                                        <% } %>
+                                                  </p>
+                                                  <% } else { %>
+                                                    <p><strong>Descrição:</strong>
+                                                      <%= comp.descricao %>
+                                                    </p>
+                                                    <p><strong>Data:</strong>
+                                                      <%= comp.data %> <strong>Hora:</strong>
+                                                        <%= comp.hora %>
+                                                    </p>
+                                                    <p><strong>Local:</strong>
+                                                      <%= comp.local %>
+                                                    </p>
+                                                    <% var isImagem=false; try { isImagem=comp.arquivo &&
+                                                      comp.arquivo.match(/\.(png|jpe?g|gif)$/i); } catch (e) {
+                                                      isImagem=false; } %>
+                                                      <% if (isImagem) { %>
+                                                        <p><strong>Imagem:</strong></p>
+                                                        <div class="container mx-auto max-w-4xl my-4">
+                                                          <img src="/uploads/<%= comp.arquivo %>" alt="Complemento"
+                                                            class="mt-2 rounded shadow w-full object-contain">
+                                                        </div>
+                                                        <% } else if (comp.arquivo) { %>
+                                                          <p><strong>Arquivo:</strong>
+                                                            <a class="text-blue-600 underline"
+                                                              href="/uploads/<%= comp.arquivo %>" target="_blank">
+                                                              <%= comp.arquivo %>
+                                                            </a>
+                                                          </p>
+                                                          <% } %>
+                                                            <% } %>
+
+                                                              <% if (!ocorrencia.encerrada) { %>
+                                                                <div class="mt-2 flex gap-4">
+                                                                  <% if (comp.tipo==='fato' ) { %>
+                                                                    <a href="/ocorrencia/<%= ocorrencia.id %>/fato/<%= comp.id %>/editar"
+                                                                      class="text-blue-600 hover:underline">Editar</a>
+                                                                    <% } else { %>
+                                                                      <a href="/ocorrencia/<%= ocorrencia.id %>/complemento/<%= comp.id %>/editar"
+                                                                        class="text-blue-600 hover:underline">Editar</a>
+                                                                      <% } %>
+                                                                        <a href="/ocorrencia/<%= ocorrencia.id %>/complemento/<%= comp.id %>/excluir"
+                                                                          class="text-red-600 hover:underline ml-4">Excluir</a>
+                                                                </div>
+                                                                <div class="mt-2 flex gap-4">
+                                                                  <form method="POST"
+                                                                    action="/ocorrencia/<%= ocorrencia.id %>/complemento/<%= comp.id %>/mover?direcao=up">
+                                                                    <button class="text-blue-600 hover:underline">🔼
+                                                                      Mover para cima</button>
+                                                                  </form>
+                                                                  <form method="POST"
+                                                                    action="/ocorrencia/<%= ocorrencia.id %>/complemento/<%= comp.id %>/mover?direcao=down">
+                                                                    <button class="text-blue-600 hover:underline">🔽
+                                                                      Mover para baixo</button>
+                                                                  </form>
+                                                                </div>
+                                                                <% } %>
+                                                                  </li>
+                                                                  <% }); %>
+                                                                    </ul>
+                                                                    <% } %>
+      </div>
+    </main>
+</body>
+
+<!-- Modal de Encerramento -->
+<div id="modalEncerrar" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white p-6 rounded shadow-md w-full max-w-md">
+    <h2 class="text-xl font-semibold mb-4">Motivo do Encerramento</h2>
+    <form class="space-y-4" method="POST" action="/ocorrencia/<%= ocorrencia.id %>/encerrar">
+      <textarea name="motivo_encerramento" required class="w-full border border-gray-300 rounded p-2 mb-4" rows="4"
+        placeholder="Descreva o motivo do encerramento..."></textarea>
+      <div class="flex justify-end gap-4">
+        <button type="button" onclick="document.getElementById('modalEncerrar').classList.add('hidden')"
+          class="px-4 py-2 rounded bg-gray-400 text-white hover:bg-gray-500">Cancelar</button>
+        <button type="submit" class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">Confirmar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+</html>

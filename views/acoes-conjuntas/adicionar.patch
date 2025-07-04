@@ -1,0 +1,23 @@
+*** Begin Patch adicionar.ejs
+@@ <!-- Upload de arquivos -->
+  <!-- vincular ocorrências existentes -->
+  <div class="mb-4">
+    <label for="ocorrencia_ids" class="block text-sm font-medium">
+      Vincular Ocorrências Existentes
+    </label>
+    <select
+      id="ocorrencia_ids"
+      name="ocorrencia_ids[]"
+      multiple
+      class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+      <% ocorrencias.forEach(o => { %>
+        <option value="<%= o.id %>">
+          <%= o.descricao %> — <%= new Date(o.data_hora).toLocaleString() %>
+        </option>
+      <% }) %>
+    </select>
+    <p class="text-xs text-gray-500 mt-1">
+      Segure Ctrl (ou ⌘) para selecionar múltiplas.
+    </p>
+  </div>
+*** End Patch

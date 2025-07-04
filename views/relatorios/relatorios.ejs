@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Relatórios</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+<body class="flex h-screen bg-gray-100">
+  <%- include('../partials/sidebar') %>
+  <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+    <h1 class="text-2xl font-semibold mb-6">Relatórios</h1>
+    <form class="space-y-4" method="get" action="/relatorios" class="mb-6 space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input class="w-full" name="protocolo"   placeholder="Protocolo"   value="<%= filters.protocolo   || '' %>" class="border p-2 rounded" />
+        <input class="w-full" type="date" name="data_from" value="<%= filters.data_from   || '' %>" class="border p-2 rounded" />
+        <input class="w-full" type="date" name="data_to"   value="<%= filters.data_to     || '' %>" class="border p-2 rounded" />
+        <input class="w-full" name="local"       placeholder="Local"        value="<%= filters.local      || '' %>" class="border p-2 rounded" />
+        <input class="w-full" name="tipo_local"  placeholder="Tipo do Local" value="<%= filters.tipo_local || '' %>" class="border p-2 rounded" />
+        <input class="w-full" name="natureza"    placeholder="Natureza"     value="<%= filters.natureza   || '' %>" class="border p-2 rounded" />
+      </div>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Filtrar</button>
+      <a href="/relatorios/export.csv?<%= new URLSearchParams(filters).toString() %>" class="ml-4 bg-green-600 text-white px-4 py-2 rounded">Exportar CSV</a>
+      <button onclick="window.print()" class="ml-2 bg-gray-600 text-white px-4 py-2 rounded">Exportar PDF</button>
+    </form>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div class="bg-white p-6 rounded-xl shadow text-center">
+        <h2 class="text-lg font-medium mb-2">Ocorrências Abertas</h2>
+        <p class="text-3xl font-bold"><%= stats.abertas %></p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow text-center">
+        <h2 class="text-lg font-medium mb-2">Ocorrências Encerradas</h2>
+        <p class="text-3xl font-bold"><%= stats.encerradas %></p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow text-center">
+        <h2 class="text-lg font-medium mb-2">Ocorrências Reabertas</h2>
+        <p class="text-3xl font-bold"><%= stats.reabertas %></p>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="text-lg font-medium mb-2">Top 5 Cidades</h2>
+        <ul class="list-disc pl-5 text-left text-sm">
+          <% cities.forEach(c => { %>
+            <li><%= c.label %>: <%= c.count %></li>
+          <% }); %>
+        </ul>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="text-lg font-medium mb-2">Top 5 Naturezas</h2>
+        <ul class="list-disc pl-5 text-left text-sm">
+          <% naturezas.forEach(n => { %>
+            <li><%= n.label %>: <%= n.count %></li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+</main>
+</body>
+</html>

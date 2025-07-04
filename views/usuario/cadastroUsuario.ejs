@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= typeof title !== 'undefined' ? title : 'SistemaCIM' %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+<%- include('../partials/sidebar') %>
+
+<main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto" class="flex-1 p-6">
+  <h1 class="text-2xl font-semibold mb-6">Cadastro de Usuários</h1>
+  <div class="mb-4">
+  <a href="/cadastro-usuario-externo" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+    Cadastrar Usuário Externo
+  </a>
+</div>
+  <div class="overflow-x-auto bg-white p-4 rounded-lg shadow">
+    <form class="space-y-4" action="/cadastro-usuario" method="POST" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium">Nome Completo</label>
+        <input class="w-full" type="text" name="nome_completo" required class="w-full border-gray-300 rounded-md"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Cargo</label>
+        <input class="w-full" type="text" name="cargo" required class="w-full border-gray-300 rounded-md"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Cidade</label>
+        <select class="w-full" name="cidade_id" required class="w-full border-gray-300 rounded-md">
+          <% cidades.forEach(function(c) { %>
+            <option value="<%= c.id %>"><%= c.cidade %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">CPF</label>
+        <input class="w-full" type="text" name="cpf" required class="w-full border-gray-300 rounded-md"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Telefone</label>
+        <input class="w-full" type="text" name="telefone" required class="w-full border-gray-300 rounded-md"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Senha</label>
+        <input class="w-full" type="password" name="senha" required class="w-full border-gray-300 rounded-md"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Perfil</label>
+        <select class="w-full" name="perfil" required class="w-full border-gray-300 rounded-md">
+          <option value="admin">Admin</option>
+          <option value="gestor">Gestor</option>
+          <option value="usuario">Usuário</option>
+        </select>
+      </div>
+      <div>
+        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Cadastrar</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+
+</body>
+</html>

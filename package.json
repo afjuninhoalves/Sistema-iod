@@ -1,0 +1,29 @@
+{
+  "name": "sistemacim",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^3.2.6",
+    "bcrypt": "^5.1.0",
+    "compression": "^1.8.0",
+    "ejs": "^3.1.10",
+    "exceljs": "^4.4.0",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "image-size": "^2.0.2",
+    "json2csv": "^6.0.0-alpha.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.2",
+    "pdfkit": "^0.13.0",
+    "sqlite3": "^5.1.7",
+    "winston": "^3.17.0"
+  },
+  "description": ""
+}

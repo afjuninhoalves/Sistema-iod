@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vincular Ocorrências - SistemaCIM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col h-screen">
+  <div class="flex flex-1 bg-gray-100 overflow-hidden">
+    <%- include('../partials/sidebar') %>
+    <main class="max-w-screen p-4" class="p-6">
+      <h1 class="text-2xl font-semibold mb-4">Vincular Ocorrências à Ação #<%= id %></h1>
+
+      <form class="space-y-4" method="POST" action="/acoes-conjuntas/<%= acaoId %>/acao-por-cidade/<%= id %>/vincular-ocorrencias" class="space-y-4">
+        <% if (possiveis.length) { %>
+          <div class="grid grid-cols-2 gap-4">
+            <% possiveis.forEach(o => { %>
+              <label class="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name="ocorrencias"
+                  value="<%= o.id %>"
+                  <%= linkedIds.includes(o.id) ? 'checked' : '' %>
+                  class="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                />
+                <span>#<%= o.id %> – <%= o.protocolo %> (<%= o.status %>)</span>
+              </label>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="text-gray-500">Não há ocorrências nesta cidade para vincular.</p>
+        <% } %>
+
+        <div>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            Salvar Vínculos
+          </button>
+          <a
+            href="/acoes-conjuntas/<%= acaoId %>/acao-por-cidade/<%= id %>"
+            class="ml-4 px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+          >
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </main>
+  </div>
+</body>
+</html>

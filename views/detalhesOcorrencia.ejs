@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalhes da Ocorrência</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+  <%- include('../partials/sidebar') %>
+  <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-semibold">Detalhes da Ocorrência</h1>
+  <div class="acao"><a href="/detalhes-ocorrencia/<%= ocorrencia.id %>/pdf" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Gerar PDF</a>
+      <a href="/ocorrencia/<%= ocorrencia.id %>/midias" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2">Mídias</a>
+  </div>
+      <% if (ocorrencia.encerrada === 0) { %><a href="/ocorrencia/<%= ocorrencia.id %>/editar" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">✏️ Editar Ocorrência</a><% } %>
+      <% if (ocorrencia.encerrada === 0) { %>
+        <form class="space-y-4" action="/ocorrencia/<%= ocorrencia.id %>/encerrar" method="POST" onsubmit="var m=prompt('Motivo de encerramento:'); if(!m) return false; this.motivo.value=m; return true;" style="display:inline">
+          <input class="w-full" type="hidden" name="motivo" value="" />
+          <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">🔒 Encerrar Ocorrência</button>
+      </form>
+      <% } %>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md space-y-4">
+      <p><strong>Protocolo:</strong> <%= ocorrencia.protocolo %></p>
+      <p><strong>Data/Hora do Fato:</strong> <%= ocorrencia.data_hora_fato %><br><strong>Cidade:</strong> <%= ocorrencia.cidade_nome || "Não informada" %></p>
+      <p><strong>Local:</strong> <%= ocorrencia.local %></p>
+      <p><strong>Tipo do Local:</strong> <%= ocorrencia.tipo_local %></p>
+      <p><strong>Natureza:</strong> <%= ocorrencia.natureza %></p>
+      <p><strong>Descrição:</strong> <%= ocorrencia.descricao %></p>
+      
+      <p><strong>Veículos:</strong></p>
+      <% (ocorrencia.veiculos || '').split(', ').forEach(function(v) { %>
+        <p class="ml-4"><%= v %></p>
+      <% }); %>
+      
+      <p><strong>Envolvidos:</strong></p>
+      <% (ocorrencia.envolvidos || '').split(', ').forEach(function(e) { %>
+        <p class="ml-4"><%= e %></p>
+      <% }); %>
+      
+      <p><strong>Armas:</strong></p>
+      <% (ocorrencia.armas || '').split(', ').forEach(function(a) { %>
+        <p class="ml-4"><%= a %></p>
+      <% }); %>
+      <% if (ocorrencia.documento) { %>
+        <p><strong>Documento:</strong> <a href="/uploads/<%= ocorrencia.documento %>" target="_blank" class="text-blue-600 underline">Download</a></p>
+      <% } else { %>
+        <p><strong>Documento:</strong> Nenhum documento anexado.</p>
+      <% } %>
+    </div>
+
+    <div class="mt-10">
+      <h2 class="text-xl font-semibold mb-4">Informações Complementares</h2>
+      <a href="/ocorrencia/<%= ocorrencia.id %>/complemento" class="inline-block mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">➕ Adicionar Complemento</a>
+
+      <% if (complementos.length === 0) { %>
+        <p class="text-gray-500">Nenhuma informação complementar registrada.</p>
+      <% } else { %>
+        <ul class="space-y-4">
+          <% complementos.forEach(function(comp) { %>
+            <li class="bg-white shadow p-4 rounded-lg">
+              <p><strong>Descrição:</strong> <%= comp.descricao %></p>
+              <p><strong>Data:</strong> <%= comp.data %> <strong>Hora:</strong> <%= comp.hora %></p>
+              <p><strong>Local:</strong> <%= comp.local %></p>
+              <% if (comp.arquivo) { %>
+                <% if (/\.(png|jpe?g|gif)$/i.test(comp.arquivo)) { %>
+                  <p><strong>Imagem:</strong></p>
+                  <div class="container mx-auto max-w-4xl my-4">
+                    <img src="/uploads/<%= comp.arquivo %>" alt="Complemento" class="mt-2 rounded shadow w-full object-contain">
+                  </div>
+                <% } else { %>
+                  <p><strong>Arquivo:</strong> <a class="text-blue-600 underline" href="/uploads/<%= comp.arquivo %>" target="_blank"><%= comp.arquivo %></a></p>
+                <% } %>
+              <% } %>
+              <div class="mt-2 flex gap-4">
+                <a href="/ocorrencia/<%= ocorrencia.id %>/complemento/<%= comp.id %>/editar" class="text-blue-600 underline">Editar</a>
+                <a href="/ocorrencia/<%= ocorrencia.id %>/complemento/<%= comp.id %>/excluir" class="text-red-600 underline" onclick="return confirm('Tem certeza que deseja excluir este complemento?')">Excluir</a>
+              </div>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
+  </main>
+</body>
+</html>

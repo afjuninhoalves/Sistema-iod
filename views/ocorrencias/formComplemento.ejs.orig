@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= complemento ? 'Editar' : 'Adicionar' %> Complemento</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script>
+  <script>
+    // Paleta de 200 cores distintas HSL
+    const PALETTE = Array.from({ length: 200 }, (_, i) => {
+      const hue = Math.round(i * 360 / 200);
+      return `hsl(${hue},70%,50%)`;
+    });
+  </script>
+</head>
+<body class="flex bg-gray-100 min-h-screen">
+  <%- include('../partials/sidebar') %>
+  <main class="flex-1 p-6">
+    <h1 class="text-2xl font-semibold mb-4"><%= complemento ? 'Editar' : 'Adicionar' %> Complemento</h1>
+    <form action="<%= complemento
+      ? '/ocorrencia/' + complemento.ocorrencia_id + '/complemento/' + complemento.id + '/editar'
+      : '/ocorrencia/' + ocorrenciaId + '/complemento' %>"
+      method="POST" enctype="multipart/form-data" class="space-y-4">
+      <div>
+        <label class="block font-medium">Descrição</label>
+        <textarea name="descricao" class="w-full border rounded p-2"><%= complemento ? complemento.descricao : '' %></textarea>
+      </div>
+      <div class="flex space-x-4">
+        <div>
+          <label class="block font-medium">Data</label>
+          <input type="date" name="data" class="border rounded p-2" value="<%= complemento ? complemento.data : '' %>" required>
+        </div>
+        <div>
+          <label class="block font-medium">Hora</label>
+          <input type="time" name="hora" class="border rounded p-2" value="<%= complemento ? complemento.hora : '' %>" required>
+        </div>
+      </div>
+      <div>
+        <label class="block font-medium">Local</label>
+        <input type="text" name="local" class="w-full border rounded p-2" value="<%= complemento ? complemento.local : '' %>" required>
+      </div>
+      <div>
+        <label class="block font-medium">Arquivo</label>
+        <input type="file" name="arquivo" class="w-full">
+        <% if (complemento && complemento.arquivo) { %>
+          <p class="text-sm mt-1">Arquivo atual:
+            <a href="/uploads/<%= complemento.arquivo %>" target="_blank" class="text-blue-600 underline"><%= complemento.arquivo %></a>
+          </p>
+          <input type="hidden" name="oldArquivo" value="<%= complemento.arquivo %>">
+        <% } %>
+      </div>
+      <div>
+        <label class="block font-medium">Preview</label>
+        <div class="relative inline-block">
+          <img id="comp-img"
+               src="<%= complemento && complemento.arquivo ? '/uploads/' + complemento.arquivo : '' %>"
+               class="max-w-full border"
+               style="display: <%= complemento && complemento.arquivo ? 'block' : 'none' %>"/>
+          <canvas id="comp-canvas" class="absolute top-0 left-0"
+                  style="display: <%= complemento && complemento.arquivo ? 'block' : 'none' %>"></canvas>
+        </div>
+      </div>
+      <div>
+        <label class="block font-medium">Estilo de Seta</label>
+        <select id="arrow-style" class="border rounded p-2">
+          <option value="standard">Padrão</option>
+          <option value="thick">Espessa</option>
+          <option value="dashed">Tracejada</option>
+        </select>
+      </div>
+      <% if (complemento) { %>
+      <div id="arrow-picker" class="grid grid-cols-3 gap-2 w-48 mt-4 mb-4">
+        <button type="button" data-dir="NW" class="border p-2">↖</button>
+        <button type="button" data-dir="N"  class="border p-2">↑</button>
+        <button type="button" data-dir="NE" class="border p-2">↗</button>
+        <button type="button" data-dir="W"  class="border p-2">←</button>
+        <button type="button" data-dir="DEL" class="border p-2 bg-red-200">✖</button>
+        <button type="button" data-dir="E"  class="border p-2">→</button>
+        <button type="button" data-dir="SW" class="border p-2">↙</button>
+        <button type="button" data-dir="S"  class="border p-2">↓</button>
+        <button type="button" data-dir="SE" class="border p-2">↘</button>
+      </div>
+      <% } %>
+      <div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          <%= complemento ? 'Salvar Alterações' : 'Adicionar' %>
+        </button>
+      </div>
+    </form>
+  </main>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const img = document.getElementById('comp-img');
+      const canvasEl = document.getElementById('comp-canvas');
+      const fileInput = document.querySelector('input[name="arquivo"]');
+      const form = document.querySelector('form');
+      const styleSelect = document.getElementById('arrow-style');
+      let fcanvas, currentDir = null;
+      // Click-to-draw: select direction and draw on click
+      document.querySelectorAll('#arrow-picker button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentDir = btn.dataset.dir;
+          canvasEl.style.cursor = currentDir === 'DEL' ? 'pointer' : 'crosshair';
+        });
+      });
+      canvasEl.addEventListener('click', e => {
+        if (!fcanvas || !currentDir) return;
+        const p = fcanvas.getPointer(e);
+        if (currentDir === 'DEL') {
+          const target = fcanvas.findTarget(e);
+          if (target && target !== fcanvas.backgroundImage) fcanvas.remove(target);
+        } else {
+          const len = 50;
+          const angles = { N: -Math.PI/2, NE: -Math.PI/4, E: 0, SE: Math.PI/4,
+                           S: Math.PI/2, SW: 3*Math.PI/4, W: Math.PI, NW: -3*Math.PI/4 };
+          const ang = angles[currentDir] || 0;
+          const x1 = p.x, y1 = p.y;
+          const x2 = x1 + len*Math.cos(ang), y2 = y1 + len*Math.sin(ang);
+          const line = new fabric.Line([x1, y1, x2, y2], {
+            stroke: PALETTE[0], strokeWidth: styleSelect.value==='thick'?4:2,
+            strokeDashArray: styleSelect.value==='dashed'? [10,5]:null, selectable:true
+          });
+          fcanvas.add(line);
+          [ang-Math.PI/6, ang+Math.PI/6].forEach(a => {
+            const hx = x2 - 10*Math.cos(a), hy = y2 - 10*Math.sin(a);
+            const head = new fabric.Line([x2, y2, hx, hy], {
+              stroke: PALETTE[0], strokeWidth: styleSelect.value==='thick'?4:2,
+              strokeDashArray: styleSelect.value==='dashed'? [10,5]:null, selectable:true
+            });
+            fcanvas.add(head);
+          });
+        }
+      });
+
+
+      function setupFabric() {
+        if (!img.src) return;
+        canvasEl.width = img.clientWidth;
+        canvasEl.height = img.clientHeight;
+        fcanvas = new fabric.Canvas(canvasEl, { selection: true, backgroundColor: 'rgba(0,0,0,0)' });
+        fcanvas.setWidth(canvasEl.width);
+        fcanvas.setHeight(canvasEl.height);
+        fabric.Image.fromURL(img.src, oImg => {
+          fcanvas.setBackgroundImage(oImg, fcanvas.renderAll.bind(fcanvas), {
+            scaleX: canvasEl.width / oImg.width,
+            scaleY: canvasEl.height / oImg.height
+          });
+        });
+        fcanvas.on('mouse:down', opt => {
+          if (!currentDir) return;
+          const p = fcanvas.getPointer(opt.e);
+          if (currentDir === 'DEL') {
+            const target = fcanvas.findTarget(opt.e);
+            if (target && target !== fcanvas.backgroundImage) fcanvas.remove(target);
+            return;
+          }
+          const len = 50;
+          const angles = { N: -Math.PI/2, NE: -Math.PI/4, E: 0, SE: Math.PI/4, S: Math.PI/2, SW: 3*Math.PI/4, W: Math.PI, NW: -3*Math.PI/4 };
+          const ang = angles[currentDir] || 0;
+          const x1 = p.x, y1 = p.y, x2 = x1 + len * Math.cos(ang), y2 = y1 + len * Math.sin(ang);
+          const line = new fabric.Line([x1, y1, x2, y2], { stroke: PALETTE[0], strokeWidth: styleSelect.value==='thick'?4:2, strokeDashArray: styleSelect.value==='dashed'? [10,5]:null, selectable: true });
+          fcanvas.add(line);
+          [ang-Math.PI/6, ang+Math.PI/6].forEach(a=> {
+            const hx = x2 - 10*Math.cos(a), hy = y2 - 10*Math.sin(a);
+            fcanvas.add(new fabric.Line([x2,y2,hx,hy],{ stroke: PALETTE[0], strokeWidth: styleSelect.value==='thick'?4:2, strokeDashArray: styleSelect.value==='dashed'? [10,5]:null, selectable:true }));
+          });
+        });
+      }
+
+      // Paste support
+      window.addEventListener('paste', e => {
+        if (e.clipboardData) {
+          for (const item of e.clipboardData.items) {
+            if (item.type.startsWith('image/')) {
+              const blob = item.getAsFile();
+              const dt = new DataTransfer();
+              dt.items.add(blob);
+              fileInput.files = dt.files;
+              const url = URL.createObjectURL(blob);
+              img.src = url; img.style.display='block'; canvasEl.style.display='block';
+              setupFabric();
+              break;
+            }
+          }
+        }
+      });
+
+      // File input change
+      fileInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          img.src = ev.target.result; img.style.display='block'; canvasEl.style.display='block'; setupFabric();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      if (img.src) img.onload = setupFabric;
+
+      
+
+      // Delete key
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Delete' && fcanvas) {
+          const obj = fcanvas.getActiveObject();
+          if (obj) fcanvas.remove(obj);
+        }
+      });
+
+      // Submit
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        if (fcanvas) {
+          canvasEl.toBlob(blob => {
+            const fd = new FormData(form);
+            fd.set('arquivo', new File([blob], 'annot.png', { type: 'image/png' }));
+            fetch(form.action, { method: 'POST', body: fd, credentials: 'same-origin' })
+              .then(() => window.location.href = '/detalhes-ocorrencia/' + (<%= complemento ? complemento.ocorrencia_id : ocorrenciaId %>))
+              .catch(err => alert('Erro: ' + err.message));
+          });
+        } else {
+          form.submit();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

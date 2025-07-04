@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home - Sistema IOD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="flex h-screen bg-gray-100">
+  <!-- Sidebar -->
+  <%- include('partials/sidebar') %>
+
+    <!-- Main content -->
+    <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+      <h1 class="text-2xl font-semibold mb-6">Painel de Controle</h1>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <a href="/solicitacoes" class="bg-white p-3 rounded-xl shadow hover:shadow-md text-center block text-sm">
+          <div class="text-3xl mb-2">📩</div>
+          <div class="font-bold">Solicitações Recebidas</div>
+        </a>
+
+        <a href="/ocorrencias" class="bg-white p-3 rounded-xl shadow hover:shadow-md text-center block text-sm">
+          <div class="text-3xl mb-2">🛂</div>
+          <div class="font-bold">Ocorrências</div>
+        </a>
+
+        <a href="/cadastro-ocorrencia" class="bg-white p-3 rounded-xl shadow hover:shadow-md text-center block text-sm">
+          <div class="text-3xl mb-2">📄</div>
+          <div class="font-bold">Cadastrar Ocorrências</div>
+        </a>
+
+        <a href="/cidades" class="bg-white p-3 rounded-xl shadow hover:shadow-md text-center block text-sm">
+          <div class="text-3xl mb-2">🌐</div>
+          <div class="font-bold">Cidades</div>
+        </a>
+
+        <a href="/cadastro-cidade" class="bg-white p-3 rounded-xl shadow hover:shadow-md text-center block text-sm">
+          <div class="text-3xl mb-2">🗺️</div>
+          <div class="font-bold">Cadastro de Cidades</div>
+        </a>
+
+        <a href="/usuarios" class="bg-white p-3 rounded-xl shadow hover:shadow-md text-center block text-sm">
+          <div class="text-3xl mb-2">👤</div>
+          <div class="font-bold">Usuários</div>
+        </a>
+
+        <a href="/usuarios-externos" class="bg-white p-3 rounded-xl shadow hover:shadow-md text-center block text-sm">
+          <div class="text-3xl mb-2">👥</div>
+          <h2 class="text-lg font-semibold mb-2">Usuários Externos</h2>
+        </a>
+
+        <a href="/cadastro-usuario" class="bg-white p-3 rounded-xl shadow hover:shadow-md text-center block text-sm">
+          <div class="text-3xl mb-2">🧑‍💻</div>
+          <div class="font-bold">Cadastro de Usuários</div>
+        </a>
+
+        <a href="/relatorios" class="bg-white p-3 rounded-xl shadow hover:shadow-md text-center block text-sm">
+          <div class="text-3xl mb-2">📊</div>
+          <div class="font-bold">Relatórios</div>
+        </a>
+
+        <a href="/ocorrencias-encerradas"
+          class="bg-white p-3 rounded-xl shadow hover:shadow-md text-center block text-sm">
+          <div class="text-3xl mb-2">📁</div>
+          <div class="font-bold">Ocorrências Encerradas</div>
+        </a>
+
+        <a href="/acoes-conjuntas" class="bg-white p-3 rounded-xl shadow hover:shadow-md text-center block text-sm">
+          <div class="text-3xl mb-2">🤝</div>
+          <h2 class="font-bold">Ações Conjuntas</h2>
+
+        </a>
+
+        <a href="/painel" class="bg-white p-3 rounded-xl shadow hover:shadow-md text-center block text-sm">
+          <div class="text-3xl mb-2">📉</div>
+          <h2 class="font-bold">Estatísticas</h2>
+
+        </a>
+
+
+        <a href="/pesquisa" class="bg-white p-3 rounded-xl shadow hover:shadow-md text-center block text-sm">
+          <div class="text-3xl mb-2">🔎</div>
+          <h2 class="font-bold"> Pesquisar Ocorrências</h2>
+
+        </a>
+
+
+
+
+      </div>
+    </main>
+</body>
+
+</html>

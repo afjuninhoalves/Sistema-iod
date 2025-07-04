@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Editar Cidade – SistemaCIM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+  <!-- Sidebar -->
+  <%- include('../partials/sidebar') %>
+
+  <!-- Main content -->
+  <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+    <h1 class="text-2xl font-semibold mb-6">Editar Cidade</h1>
+
+    <div class="bg-white p-4 rounded-lg shadow-md">
+      <form class="space-y-4" action="/editar-cidade/<%= city.id %>"
+            method="POST"
+            enctype="multipart/form-data"
+            class="space-y-4">
+
+        <!-- Nome -->
+        <div>
+          <label class="block text-sm font-medium">Nome da Cidade</label>
+          <input class="w-full" type="text" name="cidade"
+                 value="<%= city.cidade %>"
+                 required
+                 class="w-full border-gray-300 rounded-md"/>
+        </div>
+
+        <!-- Logo atual -->
+        <div>
+          <label class="block text-sm font-medium">Logo Atual</label>
+          <% if (city.logo) { %>
+            <img src="/uploads/<%= city.logo %>"
+                 alt="Logo"
+                 class="h-12 w-12 object-contain"/>
+          <% } else { %>
+            <p class="text-sm text-gray-500">Sem logo cadastrado</p>
+          <% } %>
+        </div>
+
+        <!-- Upload de novo logo -->
+        <div>
+          <label class="block text-sm font-medium">Novo Logo (opcional)</label>
+          <input class="w-full" type="file" name="logo" class="w-full"/>
+          <!-- Mantém o nome do arquivo antigo, caso não envie novo -->
+          <input class="w-full" type="hidden" name="currentLogo" value="<%= city.logo %>"/>
+        </div>
+
+        <!-- Demais campos -->
+        <div>
+          <label class="block text-sm font-medium">Corporação</label>
+          <input class="w-full" type="text" name="corporacao"
+                 value="<%= city.corporacao %>"
+                 required
+                 class="w-full border-gray-300 rounded-md"/>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium">Comandante</label>
+          <input class="w-full" type="text" name="comandante"
+                 value="<%= city.comandante %>"
+                 required
+                 class="w-full border-gray-300 rounded-md"/>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium">Telefone Contato</label>
+          <input class="w-full" type="text" name="telefone_contato"
+                 value="<%= city.telefone_contato %>"
+                 required
+                 class="w-full border-gray-300 rounded-md"/>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium">Telefone Inteligência</label>
+          <input class="w-full" type="text" name="telefone_inteligencia"
+                 value="<%= city.telefone_inteligencia %>"
+                 required
+                 class="w-full border-gray-300 rounded-md"/>
+        </div>
+
+        <button type="submit"
+                class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+          Salvar Alterações
+        </button>
+      </form>
+    </div>
+  </main>
+</body>
+</html>

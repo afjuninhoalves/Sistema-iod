@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Mídias da Ocorrência <%= ocorrenciaId %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen bg-gray-100">
+
+  <!-- Sidebar -->
+  <%- include('../partials/sidebar') %>
+
+  <!-- Main -->
+  <main class="max-w-screen p-4" class="flex-1 overflow-auto p-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-3xl font-bold text-gray-800">Mídias da Ocorrência <span class="text-indigo-600">#<%= ocorrenciaId %></span></h1>
+      <a href="/detalhes-ocorrencia/<%= ocorrenciaId %>"
+         class="inline-flex items-center px-4 py-2 bg-indigo-500 text-white rounded-lg shadow hover:bg-indigo-600 transition">
+        ← Voltar
+      </a>
+    </div>
+
+    <!-- Upload Form -->
+    <form class="space-y-4" action="/ocorrencia/<%= ocorrenciaId %>/midias"
+          method="POST" enctype="multipart/form-data"
+          class="bg-white p-6 rounded-lg shadow mb-8">
+      <label class="block text-gray-700 font-medium mb-2">Enviar Vídeos ou Áudios</label>
+      <div class="flex items-center space-x-4">
+        <input class="w-full" type="file" name="midias"
+               accept="video/mp4,audio/*"
+               multiple
+               class="flex-1 p-2 border rounded focus:outline-none focus:ring focus:border-indigo-300"/>
+        <button type="submit"
+                class="px-6 py-2 bg-green-600 text-white font-semibold rounded shadow hover:bg-green-700 transition">
+          Enviar
+        </button>
+      </div>
+    </form>
+
+    <!-- Grid de Mídias -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <% if (midias.length === 0) { %>
+        <div class="col-span-full text-center text-gray-500">
+          Nenhuma mídia encontrada.
+        </div>
+      <% } %>
+      <% midias.forEach(m => { %>
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+          <div class="flex-1 bg-gray-50 flex items-center justify-center p-4">
+            <% if (m.type === 'video') { %>
+              <video controls class="max-h-48 w-full object-contain">
+                <source src="/uploads/<%= m.filename %>" type="video/mp4">
+                Seu navegador não suporta vídeo.
+              </video>
+            <% } else { %>
+              <audio controls class="w-full">
+                <source src="/uploads/<%= m.filename %>" type="audio/mp3">
+                Seu navegador não suporta áudio.
+              </audio>
+            <% } %>
+          </div>
+          <div class="p-4 border-t">
+            <p class="text-sm text-gray-600">Enviado em <%= m.created_at %></p>
+            <a href="/uploads/<%= m.filename %>"
+               download
+               class="mt-2 inline-block text-indigo-600 hover:underline text-sm">
+              Baixar arquivo
+            </a>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </main>
+
+</body>
+</html>

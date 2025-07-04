@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Editar Informações Complementares</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+</head>
+<body class="bg-gray-100 flex min-h-screen">
+  <%- include('../partials/sidebar') %>
+  <main class="max-w-screen p-4" class="flex-1 p-6">
+    <h1 class="text-2xl font-bold mb-4">Editar Informações Complementares</h1>
+
+    <div class="mb-4">
+      <h2 class="text-lg font-semibold mb-2">Selecione um item para adicionar setas</h2>
+      <div class="flex flex-wrap gap-2">
+        <% let corIndex = 0;
+           const cores = ['#1E90FF', '#32CD32', '#FF4500', '#800080', '#FF1493', '#FFD700', '#00CED1', '#8B4513'];
+           const todosItens = [...veiculos, ...individuos, ...armas];
+           let itemCorMap = {}; %>
+
+        <% todosItens.forEach((item, idx) => { 
+              let cor = cores[corIndex % cores.length];
+              itemCorMap[item] = cor;
+              corIndex++;
+        %>
+          <button 
+            onclick="setCorAtual('<%= itemCorMap[item] %>', '<%= item %>')" 
+            class="px-3 py-1 rounded text-white" 
+            style="background-color:<%= itemCorMap[item] %>;">
+            <%= item %>
+          </button>
+        <% }) %>
+      </div>
+    </div>
+
+    <canvas id="canvas" class="border border-gray-400" width="800" height="600"></canvas>
+    <textarea id="clipboard-input" class="hidden"></textarea>
+
+    <form class="space-y-4" action="/complemento/salvar" method="POST">
+      <input class="w-full" type="hidden" name="setasJson" id="setasJson" />
+      <input class="w-full" type="hidden" name="imagemAnotada" id="imagemAnotada" />
+      <button type="submit" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded">Salvar</button>
+    </form>
+  </main>
+
+  <script>
+    const canvas = new fabric.Canvas('canvas');
+    let corAtual = '#000000';
+    let descricaoAtual = '';
+
+    function setCorAtual(cor, descricao) {
+      corAtual = cor;
+      descricaoAtual = descricao;
+    }
+
+    canvas.on('mouse:down', function(opt) {
+      const pointer = canvas.getPointer(opt.e);
+      const seta = new fabric.Line([pointer.x, pointer.y, pointer.x + 50, pointer.y + 50], {
+        stroke: corAtual,
+        strokeWidth: 3,
+        selectable: true,
+        metadata: { descricao: descricaoAtual, cor: corAtual }
+      });
+      canvas.add(seta);
+    });
+
+    document.querySelector("form").addEventListener("submit", function(e) {
+      const objetos = canvas.getObjects().map(obj => ({
+        type: obj.type,
+        x1: obj.x1,
+        y1: obj.y1,
+        x2: obj.x2,
+        y2: obj.y2,
+        cor: obj.metadata?.cor,
+        descricao: obj.metadata?.descricao
+      }));
+      document.getElementById("setasJson").value = JSON.stringify(objetos);
+    });
+
+    // Habilitar colagem de imagem do clipboard
+    document.addEventListener('paste', (event) => {
+      const items = event.clipboardData.items;
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = new fabric.Image.fromURL(e.target.result, (img) => {
+              canvas.add(img);
+              document.getElementById('imagemAnotada').value = e.target.result;
+              alert('Imagem colada com sucesso!');
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    });
+   // 6) Deletar objeto selecionado com Delete / Backspace
+ window.addEventListener('keydown', function(e) {
+   if (e.key === 'Delete' || e.key === 'Backspace') {
+     const activeObj = canvas.getActiveObject();
+     if (activeObj) {
+       canvas.remove(activeObj);
+       canvas.discardActiveObject();
+       canvas.requestRenderAll();
+     }
+   }
+ });
+
+
+  </script>
+</body>
+</html>

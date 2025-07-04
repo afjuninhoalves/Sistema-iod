@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Detalhes da Solicitação</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex bg-gray-100 min-h-screen">
+   <%- include('../partials/sidebar') %>
+
+  <main class="max-w-screen p-4" class="flex-1 p-6">
+    <h1 class="text-2xl font-semibold mb-4">Detalhes da Solicitação</h1>
+
+    <div class="bg-white p-4 rounded shadow space-y-4">
+      <div><strong>Título:</strong> <%= solicitacao.titulo %></div>
+      <div><strong>Descrição:</strong> <%= solicitacao.descricao %></div>
+
+      <% if (solicitacao.anexo) { %>
+        <div>
+          <strong>Anexo enviado na solicitação:</strong>
+          <a href="/uploads/<%= solicitacao.anexo %>" target="_blank" class="text-blue-600 underline">Ver/Download</a>
+        </div>
+      <% } %>
+
+      <% if (solicitacao.resposta) { %>
+        <div class="mt-4 border-t pt-4">
+          <div><strong>Resposta:</strong> <%= solicitacao.resposta %></div>
+          <div><strong>Data da resposta:</strong> <%= solicitacao.data_resposta %></div>
+          <% if (solicitacao.anexo_resposta) { %>
+            <div>
+              <strong>Anexo da resposta:</strong>
+              <a href="/uploads/<%= solicitacao.anexo_resposta %>" target="_blank" class="text-blue-600 underline">Ver/Download</a>
+            </div>
+          <% } %>
+          <% if (solicitacao.protocolo) { %>
+            <div><strong>Ocorrência vinculada:</strong>
+              <a href="/externo/detalhes-ocorrencia/<%= solicitacao.ocorrencia_id %>" class="text-blue-600 underline">
+                <%= solicitacao.protocolo %>
+              </a>
+            </div>
+          <% } %>
+        </div>
+      <% } else { %>
+        <div class="text-gray-500 italic">Ainda sem resposta.</div>
+      <% } %>
+    </div>
+  </main>
+</body>
+</html>

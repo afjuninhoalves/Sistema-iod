@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Solicitações – SistemaCIM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="flex bg-gray-100 h-screen">
+  <%- include('../partials/sidebar') %>
+
+    <main class="max-w-screen p-4" class="flex-1 p-6 overflow-y-auto">
+      <h1 class="text-2xl font-bold mb-4">Solicitações Recebidas</h1>
+
+      <div class="overflow-x-auto"><table class="min-w-full table-auto text-sm">
+        <thead class="bg-gray-200">
+          <tr>
+            <<th class="px-4 py-2 text-left w-12">ID</th>
+              <th class="px-4 py-2 text-left w-64">Título</th>
+              <th class="px-4 py-2 text-left w-32">Cidade</th>
+              <th class="px-4 py-2 text-left w-40">Usuário</th>
+              <th class="px-4 py-2 text-left w-28">Status</th>
+              <th class="px-4 py-2 text-center w-32">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% solicitacoes.forEach(s=> { %>
+            <tr class="border-t">
+              <td class="px-4 py-2 break-words">
+                <%= s.id %>
+              </td>
+              <td class="px-4 py-2 break-words">
+                <%= s.titulo %>
+              </td>
+              <td class="px-4 py-2 break-words">
+                <%= s.cidade %>
+              </td>
+              <td class="px-4 py-2 break-words">
+                <%= s.nome_usuario %>
+              </td>
+              <td class="px-4 py-2 break-words">
+                <%= s.status %>
+              </td>
+              <td class="px-4 py-2 text-center space-x-2">
+                <a href="/solicitacoes/<%= s.id %>/detalhes" class="text-blue-600 hover:underline">Detalhes</a>
+                <% if (!s.resposta) { %>
+                  <a href="/solicitacoes/<%= s.id %>/responder" class="text-green-600 hover:underline">Responder</a>
+                  <% } %>
+              </td>
+            </tr>
+            <% }) %>
+
+        </tbody>
+      </table></div>
+      </div>
+    </main>
+</body>
+
+</html>

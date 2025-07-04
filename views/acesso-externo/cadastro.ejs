@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastrar Usuário Externo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-xl font-bold mb-4">Cadastro de Usuário Externo</h1>
+
+    <% if (erro) { %>
+      <div class="text-red-500 mb-4"><%= erro %></div>
+    <% } %>
+
+    <form class="space-y-4" action="/externo/cadastro" method="POST" class="space-y-4">
+      <div>
+        <label>Cidade:</label>
+        <select class="w-full" name="cidade_id" class="w-full border p-2 rounded" required>
+          <% cidades.forEach(c => { %>
+            <option value="<%= c.id %>"><%= c.cidade %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div><label>Nome:</label><input class="w-full" name="nome" class="w-full border p-2 rounded" required></div>
+      <div><label>CPF:</label><input class="w-full" name="cpf" class="w-full border p-2 rounded" required></div>
+      <div><label>E-mail:</label><input class="w-full" type="email" name="email" class="w-full border p-2 rounded" required></div>
+      <div><label>Senha:</label><input class="w-full" type="password" name="senha" class="w-full border p-2 rounded" required></div>
+      <div><label>Função:</label><input class="w-full" name="funcao" class="w-full border p-2 rounded"></div>
+      <div><label>Contato:</label><input class="w-full" name="contato" class="w-full border p-2 rounded"></div>
+      <!-- Órgão -->
+        <div>
+          <label class="block text-sm text-gray-600">Órgão</label>
+          <select class="w-full" name="orgao" class="w-full border rounded p-2" required>
+          <option value="">Selecione o órgão</option>
+          <option value="DETRAN">DETRAN</option>
+          <option value="Polícia Civil">Polícia Civil</option>
+          <option value="Polícia Militar">Polícia Militar</option>
+          <option value="Ministério Público">Ministério Público</option>
+        </select>
+     </div>
+
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Salvar</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Alterar Senha</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-10">
+  <div class="max-w-md mx-auto bg-white p-8 rounded shadow">
+    <h2 class="text-xl font-semibold mb-4">Alterar Senha</h2>
+    <form class="space-y-4" method="POST" action="/alterar-senha" class="space-y-4">
+      <div>
+        <label class="block mb-1">Senha Atual</label>
+        <input class="w-full" type="password" name="senhaAtual" class="w-full border p-2 rounded" required />
+      </div>
+      <div>
+        <label class="block mb-1">Nova Senha</label>
+        <input class="w-full" type="password" name="novaSenha" class="w-full border p-2 rounded" required />
+      </div>
+      <div>
+        <label class="block mb-1">Confirmar Nova Senha</label>
+        <input class="w-full" type="password" name="confirmarSenha" class="w-full border p-2 rounded" required />
+      </div>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Salvar</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<aside class="w-64 h-screen bg-blue-900 text-white flex flex-col justify-between">
+  <div>
+    <div class="flex flex-col items-center px-6 py-6">
+    <span class="text-lg font-semibold tracking-wide">Sistema IOD</span>
+    <img src="/public/images/cim_logo.jpg" alt="CIM Logo" class="w-35 h-auto rounded shadow-md mb-2" />
+    
+  </div>
+    <nav class="flex flex-col space-y-2 px-4">
+      <a href="/externo/ocorrencias" class="hover:bg-blue-800 p-2 rounded transition">
+        Ocorrências Liberadas
+      </a>
+      <!-- Espaço para futuras funcionalidades -->
+       <a href="/externo/minhas-solicitacoes" class="block px-4 py-2 text-sm hover:bg-blue-100">
+    Minhas Solicitações
+    </a>
+    </nav>
+  </div>
+  <div class="p-4">
+    <form class="space-y-4" action="/externo/logout" method="GET">
+      <button type="submit"
+        class="w-full bg-blue-800 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition">
+        Sair
+      </button>
+    </form>
+  </div>
+</aside>

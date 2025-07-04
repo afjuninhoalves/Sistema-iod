@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ação por Cidade #<%= record.id %> – SistemaCIM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col h-screen">
+  <div class="flex flex-1 bg-gray-100 overflow-hidden">
+    <%- include('../partials/sidebar') %>
+    <main class="max-w-screen p-4" class="flex-1 overflow-y-auto p-6 space-y-6">
+      <!-- Cabeçalho -->
+      <h1 class="text-2xl font-semibold">Ação por Cidade #<%= record.id %></h1>
+
+      <!-- Ocorrências Vinculadas -->
+      <div class="mb-4 bg-white p-4 rounded shadow">
+        <div class="flex items-center justify-between mb-2">
+          <span class="block text-sm font-medium">Ocorrências vinculadas</span>
+          <a
+            href="/acoes-conjuntas/<%= acaoId %>/acao-por-cidade/<%= record.id %>/vincular-ocorrencias"
+            class="px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+          >
+            Vincular / Ocultar
+          </a>
+        </div>
+        <% if (record.ocorrencias && record.ocorrencias.length) { %>
+          <ul class="list-disc list-inside">
+            <% record.ocorrencias.forEach(o => { %>
+              <li>
+                <a href="/ocorrencias/<%= o.id %>" class="text-blue-600 hover:underline">
+                  <%= o.protocolo %> – <%= o.status %>
+                </a>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p class="text-gray-500">Nenhuma ocorrência vinculada.</p>
+        <% } %>
+      </div>
+
+      <!-- Dados básicos -->
+      <section class="bg-white p-6 rounded shadow">
+        <p class="text-sm text-gray-500 mb-2">
+          <strong>Data/Hora:</strong>
+          <%= new Date(record.data_hora).toLocaleString('pt-BR') %>
+        </p>
+        <p class="mb-2"><strong>Responsável:</strong> <%= record.responsavel %></p>
+        <p><strong>Descrição:</strong> <%= record.descricao %></p>
+      </section>
+
+      <!-- Qualificadores -->
+      <section class="bg-white p-6 rounded shadow">
+        <h2 class="text-lg font-medium mb-4">Qualificadores</h2>
+        <% record.qualificadores.forEach(q => { %>
+          <div class="border-b border-gray-200 py-3">
+            <p><strong>Tipo:</strong> <%= q.tipo === 'individuos' ? 'Indivíduos' : 'Informantes' %></p>
+            <p><strong>Nome:</strong> <%= q.nome %></p>
+            <% if (q.tipo === 'individuos') { %>
+              <p><strong>CPF:</strong> <%= q.cpf %></p>
+              <p><strong>Endereço:</strong> <%= q.endereco %></p>
+            <% } %>
+            <p><strong>Telefone:</strong> <%= q.telefone %></p>
+            <p><strong>Descrição:</strong> <%= q.descricao %></p>
+          </div>
+        <% }); %>
+      </section>
+
+      <!-- Mídias -->
+      <% if (record.arquivos && record.arquivos.length) { %>
+        <section class="bg-white p-6 rounded shadow">
+          <h2 class="text-lg font-medium mb-4">Mídias</h2>
+          <div class="grid grid-cols-3 gap-4">
+            <% record.arquivos.forEach((file, i) => {
+                 const tipo = record.tipos[i];
+            %>
+              <div class="border p-2 rounded">
+                <% if (tipo === 'video') { %>
+                  <video class="w-full h-32 object-cover" controls>
+                    <source src="/uploads/<%= file %>" type="video/mp4">
+                  </video>
+                <% } else { %>
+                  <audio controls class="w-full">
+                    <source src="/uploads/<%= file %>" type="audio/mpeg">
+                  </audio>
+                <% } %>
+                <p class="mt-2 text-xs text-gray-500 truncate"><%= file %></p>
+              </div>
+            <% }); %>
+          </div>
+        </section>
+      <% } %>
+
+      <!-- Botões -->
+      <div class="space-x-2">
+        <a
+          href="/acoes-conjuntas/<%= acaoId %>/acao-por-cidade/<%= record.id %>/editar"
+          class="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+        >
+          Editar
+        </a>
+        <a
+          href="/acoes-conjuntas/<%= acaoId %>"
+          class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Voltar
+        </a>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

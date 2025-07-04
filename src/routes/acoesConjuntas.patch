@@ -1,0 +1,32 @@
+*** Begin Patch acoesConjuntas.js
+@@ router.get('/:id/adicionar'
+-     res.render('acoes-conjuntas/adicionar', { acaoId, cidades });
++     // 2) Carrega lista de ocorrências existentes
++     db.all(
++       `SELECT id, descricao, data_hora FROM ocorrencias`,
++       [],
++       (err2, ocorrencias) => {
++         if (err2) return next(err2);
++         // 3) Renderiza passando também as ocorrências
++         res.render('acoes-conjuntas/adicionar', {
++           acaoId,
++           cidades,
++           ocorrencias
++         });
++       }
++     );
+@@ router.post('/:id/cidades/:cidadeId'
+-    res.redirect(`/acoes-conjuntas/${acaoId}`);
++    // 4) Vincular ocorrências pré-existentes
++    const ocorrIds = req.body.ocorrencia_ids || [];
++    const lista = Array.isArray(ocorrIds) ? ocorrIds : [ocorrIds];
++    for (const ocId of lista) {
++      await runAsync(
++        db,
++        `INSERT INTO acao_por_cidade_ocorrencias (acao_por_cidade_id, ocorrencia_id) VALUES (?, ?)`,
++        [apcId, ocId]
++      );
++    }
++    // 5) Redireciona de volta
++    res.redirect(`/acoes-conjuntas/${acaoId}`);
+*** End Patch

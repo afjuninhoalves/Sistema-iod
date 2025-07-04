@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastrar Novo Fato</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="flex bg-gray-100 min-h-screen">
+  <%- include('../partials/sidebar') %>
+
+    <main class="flex-1 p-6">
+      <h1 class="text-2xl font-semibold mb-4">Novo Fato para Ocorrência <%= ocorrencia.protocolo %>
+      </h1>
+
+      <form action="/ocorrencia/<%= ocorrencia.id %>/fato" method="POST" enctype="multipart/form-data"
+        class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block font-medium">Data e Hora do Fato</label>
+            <input type="datetime-local" name="data_hora" required class="w-full p-2 border rounded" />
+          </div>
+
+          <div>
+            <label class="block font-medium">Tipo de Local</label>
+            <input type="text" name="tipo_local" class="w-full p-2 border rounded" />
+          </div>
+
+          <div>
+            <label class="block font-medium">Cidade</label>
+            <select name="cidade_id" class="w-full p-2 border rounded">
+              <% cidades.forEach(c=> { %>
+                <option value="<%= c.id %>" <%=c.id===ocorrencia.cidade_id ? 'selected' : '' %>><%= c.cidade %>
+                </option>
+                <% }) %>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-medium">Local</label>
+          <input type="text" name="local" class="w-full p-2 border rounded" required />
+        </div>
+
+        <div>
+          <label class="block font-medium">Natureza</label>
+          <input type="text" name="natureza" class="w-full p-2 border rounded" />
+        </div>
+
+        <div>
+          <label class="block font-medium">Descrição</label>
+          <textarea name="descricao" class="w-full p-2 border rounded" rows="4"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-medium">Armas (separadas por vírgula)</label>
+          <input type="text" name="armas" class="w-full p-2 border rounded" />
+        </div>
+
+        <div>
+          <label class="block font-medium">Documento (PDF, Word, etc)</label>
+          <input type="file" name="documento" class="w-full" />
+        </div>
+
+        <!-- Veículos -->
+        <div>
+          <label class="block font-medium">Veículos</label>
+          <div id="veiculos" class="space-y-2">
+            <div class="grid grid-cols-3 gap-2">
+              <input type="text" name="veiculos[][marca_modelo]" placeholder="Marca/Modelo"
+                class="p-2 border rounded" />
+              <input type="text" name="veiculos[][cor]" placeholder="Cor" class="p-2 border rounded" />
+              <input type="text" name="veiculos[][placa]" placeholder="Placa" class="p-2 border rounded" />
+            </div>
+          </div>
+          <button type="button" onclick="addVeiculo()" class="text-blue-600 mt-2">+ Adicionar Veículo</button>
+        </div>
+
+        <!-- Envolvidos -->
+        <div>
+          <label class="block font-medium">Envolvidos</label>
+          <div id="envolvidos" class="space-y-2">
+            <div class="grid grid-cols-5 gap-2">
+              <select name="envolvidos[][tipo]" class="p-2 border rounded">
+                <option value="Vítima">Vítima</option>
+                <option value="Envolvido">Envolvido</option>
+                <option value="Suspeito">Suspeito</option>
+                <option value="Autor">Autor</option>
+              </select>
+              <input type="text" name="envolvidos[][nome]" placeholder="Nome" class="p-2 border rounded" />
+              <input type="text" name="envolvidos[][cpf]" placeholder="CPF" class="p-2 border rounded" />
+              <input type="text" name="envolvidos[][telefone]" placeholder="Telefone" class="p-2 border rounded" />
+              <input type="text" name="envolvidos[][endereco]" placeholder="Endereço" class="p-2 border rounded" />
+            </div>
+          </div>
+          <button type="button" onclick="addEnvolvido()" class="text-blue-600 mt-2">+ Adicionar Envolvido</button>
+        </div>
+
+        <div>
+          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Salvar
+            Fato</button>
+          <a href="/detalhes-ocorrencia/<%= ocorrencia.id %>" class="ml-4 text-blue-600 underline">Voltar</a>
+        </div>
+      </form>
+    </main>
+
+    <script>
+      function addVeiculo() {
+        const container = document.getElementById('veiculos');
+        const linha = document.createElement('div');
+        linha.className = 'grid grid-cols-3 gap-2';
+        linha.innerHTML = `
+        <input type="text" name="veiculos[][marca_modelo]" placeholder="Marca/Modelo" class="p-2 border rounded" />
+        <input type="text" name="veiculos[][cor]" placeholder="Cor" class="p-2 border rounded" />
+        <input type="text" name="veiculos[][placa]" placeholder="Placa" class="p-2 border rounded" />
+      `;
+        container.appendChild(linha);
+      }
+
+      function addEnvolvido() {
+        const container = document.getElementById('envolvidos');
+        const linha = document.createElement('div');
+        linha.className = 'grid grid-cols-5 gap-2';
+        linha.innerHTML = `
+        <select name="envolvidos[][tipo]" class="p-2 border rounded">
+          <option value="Vítima">Vítima</option>
+          <option value="Envolvido">Envolvido</option>
+          <option value="Suspeito">Suspeito</option>
+          <option value="Autor">Autor</option>
+        </select>
+        <input type="text" name="envolvidos[][nome]" placeholder="Nome" class="p-2 border rounded" />
+        <input type="text" name="envolvidos[][cpf]" placeholder="CPF" class="p-2 border rounded" />
+        <input type="text" name="envolvidos[][telefone]" placeholder="Telefone" class="p-2 border rounded" />
+        <input type="text" name="envolvidos[][endereco]" placeholder="Endereço" class="p-2 border rounded" />
+      `;
+        container.appendChild(linha);
+      }
+    </script>
+</body>
+
+</html>
